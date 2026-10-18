@@ -132,12 +132,31 @@
     .cg-table th, .cg-table td { padding: 8px 10px; border: 1px solid var(--border-warm); }
     .cg-table th { background: var(--bg-panel); color: var(--red-bright); }
     .cg-table tr.me { background: rgba(206, 41, 26, 0.25); font-weight: bold; }
-    .cg-table th:nth-child(1), .cg-table td:nth-child(1) { width: 20%; text-align: center; }
-    .cg-table th:nth-child(2), .cg-table td:nth-child(2) { width: 45%; word-break: break-word; text-align: left; }
-    .cg-table th:nth-child(3), .cg-table td:nth-child(3) { width: 35%; text-align: right; }
+    .cg-table th:nth-child(1), .cg-table td:nth-child(1) { width: 13%; text-align: center; }
+    .cg-table th:nth-child(2), .cg-table td:nth-child(2) { width: 33%; word-break: break-word; text-align: left; }
+    .cg-table th:nth-child(3), .cg-table td:nth-child(3) { width: 34%; word-break: break-word; text-align: right; }
+    .cg-table th:nth-child(4), .cg-table td:nth-child(4) { width: 20%; text-align: right; }
 
-    .flipbook-container { position: relative; width: 100%; height: 75vh; min-height: 580px; background: #000; border: 2px solid var(--border-warm); box-shadow: var(--shadow-sm); overflow: hidden; }
-    .flipbook-iframe { width: 100%; height: 100%; border: none; display: block; }
+    /* FLIPBOOK CROP MẸO CSS ĐỂ ẨN THANH TRẮNG TRÊN CÙNG */
+    .flipbook-container { 
+      position: relative; 
+      width: 100%; 
+      height: 75vh; 
+      min-height: 580px; 
+      background: #000; 
+      border: 2px solid var(--border-warm); 
+      box-shadow: var(--shadow-sm); 
+      overflow: hidden; /* Cắt bỏ phần bị tràn */
+    }
+    .flipbook-iframe { 
+      width: 100%; 
+      height: calc(100% + 46px); /* Bù lại chiều cao bị thụt lên */
+      border: none; 
+      display: block; 
+      position: absolute;
+      top: -46px; /* Đẩy thanh công cụ màu trắng lên trên khung nhìn */
+      left: 0;
+    }
     .flipbook-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: var(--bg-panel); border: 2px solid var(--border-warm); padding: 10px 16px; margin-bottom: 14px; font-family: var(--font-mono); font-size: 0.82rem; }
     
     /* Fullscreen CSS cho điện thoại */
@@ -153,7 +172,7 @@
       border-radius: 0 !important;
     }
 
-    /* Giao diện Mobile tối ưu: Menu vuốt ngang trượt tự động ra giữa */
+    /* Giao diện Mobile tối ưu */
     @media (max-width: 980px) {
       .hero-grid, .module-grid, .quiz-options, .cg-hud { grid-template-columns: 1fr; }
       .flipbook-container { height: 60vh; min-height: 420px; }
@@ -173,7 +192,7 @@
         overflow-x: auto !important;
         white-space: nowrap !important;
         gap: 6px !important;
-        padding: 2px 14px !important; /* Tạo lề để hé lộ các tab cạnh */
+        padding: 2px 14px !important;
         scroll-behavior: smooth;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
@@ -185,9 +204,10 @@
         padding: 7px 12px !important;
       }
 
-      .cg-table th:nth-child(1), .cg-table td:nth-child(1) { width: 22% !important; }
-      .cg-table th:nth-child(2), .cg-table td:nth-child(2) { width: 43% !important; }
-      .cg-table th:nth-child(3), .cg-table td:nth-child(3) { width: 35% !important; }
+      .cg-table th:nth-child(1), .cg-table td:nth-child(1) { width: 13% !important; }
+      .cg-table th:nth-child(2), .cg-table td:nth-child(2) { width: 29% !important; }
+      .cg-table th:nth-child(3), .cg-table td:nth-child(3) { width: 37% !important; }
+      .cg-table th:nth-child(4), .cg-table td:nth-child(4) { width: 21% !important; }
     }
   </style>
 </head>
@@ -314,9 +334,9 @@
               id="flipbookIframe"
               class="flipbook-iframe"
               src="https://heyzine.com/flip-book/8d1b1fbf46.html" 
-              allowfullscreen="true"
-              webkitallowfullscreen="true"
-              mozallowfullscreen="true"
+              allowfullscreen="true" 
+              webkitallowfullscreen="true" 
+              mozallowfullscreen="true" 
               allow="fullscreen; clipboard-write">
             </iframe>
           </div>
@@ -340,7 +360,6 @@
     function switchView(n, clickedBtn) {
       document.querySelectorAll('.view-section').forEach(s => s.classList.toggle('active', s.id === 'view-' + n));
       
-      // Active nút tương ứng trên thanh Menu
       let targetBtn = clickedBtn;
       document.querySelectorAll('.os-nav-btn').forEach(b => {
         const isTarget = (b.getAttribute('onclick') || '').includes("'" + n + "'");
@@ -348,7 +367,6 @@
         if (isTarget) targetBtn = b;
       });
 
-      // Tự động cuộn mượt nút đang chọn vào giữa thanh Menu (hé lộ các tab 2 bên)
       if (targetBtn && targetBtn.scrollIntoView) {
         targetBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       }
@@ -357,7 +375,6 @@
 
       const crtBtn = document.getElementById('crtToggleBtn');
 
-      // Tắt CRT khi xem Flipbook hoặc Game
       if (n === 'flipbook' || n === 'game') {
         if (crtBtn && crtBtn.classList.contains('active')) {
           crtBtn.classList.remove('active');
@@ -370,9 +387,7 @@
             if (iframe && iframe.contentWindow) iframe.contentWindow.focus();
           }, 150);
         }
-      } 
-      // Bật lại CRT khi quay về Home
-      else if (n === 'home') {
+      } else if (n === 'home') {
         if (crtBtn) {
           crtBtn.classList.add('active');
           document.body.classList.add('crt-enabled');
@@ -381,17 +396,14 @@
       }
     }
 
-    /* [MỚI] Mở flipbook đúng trang theo mục.
-       >>> SỬA SỐ TRANG Ở ĐÂY cho khớp với sách của bạn (số trang trong Heyzine) <<< */
     const FLIPBOOK_URL = 'https://heyzine.com/flip-book/8d1b1fbf46.html';
-    const FLIPBOOK_PAGES = { 1: 2, 2: 5, 3: 8 };   // 1 = Phần II.1, 2 = Phần II.2, 3 = Phần II.3
+    const FLIPBOOK_PAGES = { 1: 2, 2: 11, 3: 16 };
 
     function openFlipbookAtSpread(n) {
       switchView('flipbook');
       const old = document.getElementById('flipbookIframe');
       if (!old) return;
       const url = FLIPBOOK_URL + '#page/' + (FLIPBOOK_PAGES[n] || 1);
-      // Tạo lại iframe để chắc chắn tải lại và nhảy đúng trang (đổi mỗi phần hash có thể không làm Heyzine chuyển trang)
       const f = old.cloneNode(false);
       f.src = url;
       old.replaceWith(f);
@@ -462,7 +474,7 @@
     tickClock(); setInterval(tickClock, 1000);
   </script>
 
-  <!-- MÃ NGUỒN ARCADE GAME -->
+  <!-- MÃ NGUỒN ARCADE GAME (TÍCH HỢP NÚT XÓA BXH + FIREBASE) -->
   <script>
 (function () {
   const TEN_GAME = 'CAPITAL RUSH';
@@ -471,8 +483,7 @@
   const THOI_GIAN_PHA2 = 30;
   const DIEM_DUNG = 40 * TRIEU;
   const KHOA_BXH = 'capital_os_bxh';
-  // [MỚI] Bảng xếp hạng theo thời gian chỉ tính người đạt K tối thiểu này (đặt 0 để bỏ điều kiện)
-  const MIN_K_TOC_DO = 300 * TRIEU;
+  const FIREBASE_URL = 'https://kctcnhom5-default-rtdb.asia-southeast1.firebasedatabase.app/bxh.json';
 
   const CAU_HOI = [
     { tag: 'MỞ ĐẦU',
@@ -547,15 +558,17 @@
   const thanhGio = () => `<div class="cg-timer"><span>⏱</span><div class="meter-track"><div id="cgBar" class="meter-fill" style="width:100%"></div></div><strong id="cgTime">--</strong></div>`;
   const hud = K => `<div class="cg-hud"><div>TƯ BẢN K<strong>${tien(K)}</strong></div><div>C (bất biến) = 80%K<strong>${tien(K * .8)}</strong></div><div>V (khả biến) = 20%K<strong>${tien(K * .2)}</strong></div></div>`;
 
+  const tron = n => { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
   function hien(html) { root().innerHTML = html; khoa = false; }
 
   function manThietLap() {
-    dungGio(); S = { ten: '', K: 0, pha1: [], nhatKy: [], tg: 0 }; tag('THIẾT LẬP');   // [MỚI] tg: tổng thời gian suy nghĩ (giây)
+    dungGio(); S = { ten: '', K: 0, pha1: [], nhatKy: [], tg: 0 }; tag('THIẾT LẬP');
     hien(`<div class="cg-center">
       <h2>🎩 ${esc(TEN_GAME)}</h2>
       <div class="cg-quote">"Thị trường không nhớ ai là người bắt đầu. Thị trường chỉ nhớ ai là người sống sót và đứng trên đỉnh cao."</div>
       <p style="line-height:1.6;color:var(--cream-soft)">Năm 2000, nền kinh tế bước vào thời kỳ bùng nổ khởi nghiệp. Hàng loạt doanh nghiệp mới xuất hiện, ai cũng mang tham vọng trở thành người dẫn đầu thị trường. Các nhà đầu tư gọi đây là thời đại của những cơ hội.</p>
-      <div class="cg-rules"><strong>THỂ LỆ</strong><br>• Chơi cá nhân: bạn nhập vai một nhà tư bản độc lập, khởi đầu với <strong>hai bàn tay trắng</strong>.<br>• <strong>PHA 1 – GỌI VỐN:</strong> dùng tri thức vượt qua 4 thử thách (25 giây/câu) để kiếm vốn ban đầu.<br>• <strong>PHA 2 – ĐẦU TƯ &amp; TÍCH LŨY:</strong> cầm số vốn vừa kiếm được, ra quyết định đầu tư hoặc tiêu dùng qua 4 tình huống (30 giây/tình huống).</div>
+      <div class="cg-rules"><strong>THỂ LỆ</strong><br>• Chơi cá nhân: bạn nhập vai một nhà tư bản độc lập, khởi đầu với <strong>hai bàn tay trắng</strong>.<br>• <strong>PHA 1 – GỌI VỐN:</strong> dùng tri thức vượt qua 4 thử thách (25 giây/câu) để kiếm vốn ban đầu.<br>• <strong>PHA 2 – ĐẦU TƯ &amp; TÍCH LŨY:</strong> cầm số vốn vừa kiếm được, ra quyết định đầu tư hoặc tiêu dùng qua 4 tình huống (30 giây/tình huống).<br>• <strong>XẾP HẠNG:</strong> theo tổng tư bản K cao nhất; nếu K bằng nhau, ai hoàn thành nhanh hơn sẽ xếp trên.</div>
       <label style="font-family:var(--font-mono);font-size:.85rem">// NHẬP TÊN DOANH NGHIỆP:</label>
       <input id="cgTen" class="retro-input cg-input" maxlength="30" placeholder="VD: Tập đoàn Sao Đỏ" autocomplete="off">
       <button class="retro-btn primary" data-act="batdau">▶ KHỞI NGHIỆP</button></div>`);
@@ -573,32 +586,34 @@
 
   function manCauHoi(i) {
     const c = CAU_HOI[i]; tag(`PHA 1 • CÂU ${i + 1}/4`);
+    S.thuTu = tron(c.o.length);
     hien(`${thanhGio()}
       <div class="quiz-header-bar"><span>DOANH NGHIỆP: <strong>${esc(S.ten)}</strong></span><span>VỐN HIỆN CÓ: <strong style="color:var(--red-bright)">${tien(S.K)}</strong></span></div>
       <div class="quiz-question-card"><span class="quiz-q-tag">THỬ THÁCH ${i + 1} • ${c.tag}</span>
         <div class="quiz-q-text">${esc(c.q).replace(/\n/g, '<br>')}</div>
-        <div class="quiz-options">${c.o.map((t, k) => `<button class="quiz-opt-btn" data-act="tl" data-i="${i}" data-k="${k}"><span class="opt-letter">${'ABCD'[k]}</span><span>${esc(t)}</span></button>`).join('')}</div>
+        <div class="quiz-options">${S.thuTu.map((goc, vt) => `<button class="quiz-opt-btn" data-act="tl" data-i="${i}" data-k="${goc}"><span class="opt-letter">${'ABCD'[vt]}</span><span>${esc(c.o[goc])}</span></button>`).join('')}</div>
         <div id="cgFb" class="quiz-feedback"></div></div>`);
     batDauGio(THOI_GIAN_PHA1, () => traLoiPha1(i, -1, 0));
   }
 
   function traLoiPha1(i, k, conLai) {
     if (khoa) return; khoa = true;
-    S.tg += tongGio - conLai;   // [MỚI] cộng thời gian đã dùng cho câu này
+    S.tg += tongGio - conLai;
     const c = CAU_HOI[i], dung = k === c.d, giay = Math.ceil(conLai);
     let thuong = 0;
     if (dung) thuong = giay >= 21 ? 30 * TRIEU : giay >= 16 ? 20 * TRIEU : giay >= 11 ? 10 * TRIEU : 0;
     const tong = dung ? DIEM_DUNG + thuong : 0;
     S.K += tong; S.pha1.push(tong);
-    document.querySelectorAll('.quiz-opt-btn').forEach((b, idx) => {
+    document.querySelectorAll('.quiz-opt-btn').forEach(b => {
+      const goc = +b.dataset.k;
       b.disabled = true;
-      if (idx === c.d) b.classList.add('correct');
-      else if (idx === k) b.classList.add('wrong');
+      if (goc === c.d) b.classList.add('correct');
+      else if (goc === k) b.classList.add('wrong');
     });
     dung ? amDung() : amSai();
     const fb = $('cgFb'); fb.classList.add('show');
     fb.innerHTML = `<strong>${dung ? '✅ CHÍNH XÁC!' : (k < 0 ? '⏰ HẾT GIỜ!' : '❌ SAI RỒI!')}</strong> ${dung ? `+${tien(DIEM_DUNG)}${thuong ? ` & thưởng tốc độ +${tien(thuong)} (còn ${giay}s)` : ' (không có thưởng tốc độ)'}` : 'Bạn không nhận được vốn từ câu này.'}
-      <p style="margin:8px 0;color:var(--cream-soft)">Đáp án đúng: <strong>${'ABCD'[c.d]}</strong>. ${esc(c.giaiThich)}</p>
+      <p style="margin:8px 0;color:var(--cream-soft)">Đáp án đúng: <strong>${'ABCD'[S.thuTu.indexOf(c.d)]}</strong>. ${esc(c.giaiThich)}</p>
       <button class="retro-btn primary" data-act="${i < 3 ? 'cau' : 'pha2'}" data-i="${i + 1}">${i < 3 ? 'CÂU TIẾP THEO ▶' : 'TỔNG KẾT PHA 1 ▶'}</button>`;
   }
 
@@ -624,7 +639,7 @@
     batDauGio(THOI_GIAN_PHA2, () => chamTH1(null));
   }
   function chamTH1(raw) {
-    if (khoa) return; khoa = true; S.tg += tongGio - dungGio();   // [MỚI] cộng thời gian
+    if (khoa) return; khoa = true; S.tg += tongGio - dungGio();
     const v = raw === null || raw.trim() === '' ? NaN : parseFloat(raw.replace(/[.\s]/g, '').replace(',', '.'));
     const dung = Math.abs(v - S.m) < 1;
     dung ? amDung() : amSai();
@@ -648,7 +663,7 @@
     batDauGio(THOI_GIAN_PHA2, () => chonTH2(0, true));
   }
   function chonTH2(k, hetGio) {
-    if (khoa) return; khoa = true; S.tg += tongGio - dungGio();   // [MỚI] cộng thời gian
+    if (khoa) return; khoa = true; S.tg += tongGio - dungGio();
     const he = [0, 0.5, 1][k], truoc = S.K;
     S.K = truoc + he * S.m; S.Kp = S.K; S.c2 = k;
     S.nhatKy.push(`TH2: chọn ${'ABC'[k]} → K' = ${tien(S.K)}`);
@@ -671,7 +686,7 @@
     batDauGio(THOI_GIAN_PHA2, () => chonTH3(0, true));
   }
   function chonTH3(k, hetGio) {
-    if (khoa) return; khoa = true; S.tg += tongGio - dungGio();   // [MỚI] cộng thời gian
+    if (khoa) return; khoa = true; S.tg += tongGio - dungGio();
     S.c3 = k; const thuong = k === 1 ? 0.15 * S.m2 : 0;
     S.K = S.K + S.m2 + thuong; S.K2 = S.K;
     S.nhatKy.push(`TH3: chọn ${'AB'[k]} → K₂ = ${tien(S.K)}`);
@@ -697,7 +712,7 @@
     batDauGio(THOI_GIAN_PHA2, () => chonTH4(-1));
   }
   function chonTH4(k) {
-    if (khoa) return; khoa = true; S.tg += tongGio - dungGio();   // [MỚI] cộng thời gian
+    if (khoa) return; khoa = true; S.tg += tongGio - dungGio();
     let he, lyDo;
     if (k < 0) { he = 0.6; lyDo = 'Không kịp hành động nên mất 40% tổng vốn K₂.'; }
     else [he, lyDo] = BANG4['ABC'[k]]['AB'[S.c3]];
@@ -711,17 +726,17 @@
   }
 
   /* ====== CẤU HÌNH CLOUD REALTIME ====== */
-  const FIREBASE_URL = 'https://kctcnhom5-default-rtdb.asia-southeast1.firebasedatabase.app/bxh.json';
+  function docBXHLocal() { try { return JSON.parse(localStorage.getItem(KHOA_BXH)) || []; } catch(err) { return []; } }
 
   async function docBXH() {
     try {
       const res = await fetch(FIREBASE_URL);
       const data = await res.json();
-      if (!data) return [];
+      if (!data) return docBXHLocal();
       return Object.keys(data).map(key => data[key]);
     } catch (e) {
       console.error('Lỗi tải BXH:', e);
-      try { return JSON.parse(localStorage.getItem(KHOA_BXH)) || []; } catch(err) { return []; }
+      return docBXHLocal();
     }
   }
 
@@ -737,43 +752,59 @@
     }
   }
 
-  /* --- [MỚI] VẼ BẢNG XẾP HẠNG: kieu = 'k' (theo tư bản K) hoặc 'tg' (theo thời gian) --- */
+  /* HÀM XÓA TOÀN BỘ BẢNG XẾP HẠNG */
+  async function xoaToanBoBXH() {
+    const xacNhan = confirm("⚠ BẠN CÓ CHẮC CHẮN MUỐN XÓA TOÀN BỘ BẢNG XẾP HẠNG KHÔNG?\n(Thao tác này sẽ xóa sạch dữ liệu trên toàn hệ thống)");
+    if (!xacNhan) return;
+
+    try {
+      await fetch(FIREBASE_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+    } catch (e) {
+      console.error('Lỗi khi xóa Firebase:', e);
+    }
+
+    try {
+      localStorage.removeItem(KHOA_BXH);
+    } catch (e) {}
+
+    bxhDs = [];
+    bxhId = 0;
+    veBXH();
+  }
+
+  /* BẢNG XẾP HẠNG DUY NHẤT */
   let bxhDs = [], bxhId = 0;
 
-  function veBXH(kieu) {
-    let d = bxhDs.slice();
-    if (kieu === 'tg') {
-      // Chỉ tính người có thời gian và đạt K tối thiểu; nhanh hơn xếp trước, bằng nhau thì K cao hơn xếp trước
-      d = d.filter(x => typeof x.tg === 'number' && x.K >= MIN_K_TOC_DO)
-           .sort((a, b) => a.tg - b.tg || b.K - a.K);
-    } else {
-      // Theo K giảm dần; bằng nhau thì ai nhanh hơn xếp trước
-      d.sort((a, b) => b.K - a.K || (a.tg ?? 1e9) - (b.tg ?? 1e9));
-    }
+  function veBXH() {
+    const d = bxhDs.slice().sort((x, y) =>
+      y.K - x.K ||
+      (x.tg ?? 1e9) - (y.tg ?? 1e9) ||
+      (x.id ?? 0) - (y.id ?? 0));
     const hang = d.findIndex(x => x.id === bxhId) + 1;
     const c = $('bxhContainer'); if (!c) return;
     c.innerHTML = `
-      <div class="cta-row" style="justify-content:center;margin:0 0 12px">
-        <button class="retro-btn ${kieu === 'k' ? 'primary' : 'ghost'} sm" data-act="bxh" data-kieu="k">🏆 THEO TƯ BẢN K</button>
-        <button class="retro-btn ${kieu === 'tg' ? 'primary' : 'ghost'} sm" data-act="bxh" data-kieu="tg">⚡ THEO THỜI GIAN</button>
-      </div>
-      ${kieu === 'tg' ? `<p style="font-size:.8rem;color:var(--cream-muted)">Chỉ tính người đạt K ≥ ${tien(MIN_K_TOC_DO)}</p>` : ''}
-      <p style="margin:10px 0;font-weight:bold;color:var(--red-bright)">
-        Vị trí của bạn: ${hang > 0 ? 'Hạng #' + hang + ' trên toàn hệ thống' : 'chưa có trong bảng này'}
+      <p style="margin:10px 0 4px;font-weight:bold;color:var(--red-bright)">
+        Vị trí của bạn: ${hang > 0 ? 'Hạng #' + hang + ' trên toàn hệ thống' : 'chưa có trong bảng'}
       </p>
+      <p style="font-size:.8rem;color:var(--cream-muted)">Xếp theo tổng tư bản K; K bằng nhau thì ai nhanh hơn xếp trên.</p>
       <table class="cg-table">
-        <tr><th>HẠNG</th><th>DOANH NGHIỆP</th><th>${kieu === 'tg' ? 'THỜI GIAN' : 'TỔNG TƯ BẢN K'}</th></tr>
+        <tr><th>HẠNG</th><th>DOANH NGHIỆP</th><th>TỔNG TƯ BẢN K</th><th>THỜI GIAN</th></tr>
         ${d.slice(0, 10).map((x, i) => `
           <tr class="${x.id === bxhId ? 'me' : ''}">
             <td>#${i + 1}</td>
             <td>${esc(x.ten)}</td>
-            <td>${kieu === 'tg' ? (x.tg ?? 0).toFixed(1) + 's' : tien(x.K)}</td>
+            <td>${tien(x.K)}</td>
+            <td>${typeof x.tg === 'number' ? x.tg.toFixed(1) + 's' : '—'}</td>
           </tr>
         `).join('')}
       </table>`;
   }
 
-  /* --- MÀN HÌNH HỒI KẾT: TỰ ĐỘNG ĐỒNG BỘ ONLINE --- */
+  /* MÀN HÌNH HỒI KẾT (CÓ NÚT XÓA BXH) */
   async function manKetThuc() {
     tag('HỒI KẾT');
     dungGio();
@@ -791,8 +822,9 @@
           ⏳ Đang đồng bộ bảng xếp hạng toàn server...
         </div>
         <div id="bxhContainer"></div>
-        <div class="cta-row" style="justify-content:center; margin-top:20px;">
+        <div class="cta-row" style="justify-content:center; gap: 12px; margin-top:20px;">
           <button class="retro-btn primary" data-act="lai">🔄 CHƠI LẠI</button>
+          <button class="retro-btn ghost" data-act="xoabxh" style="color:var(--red-bright); border-color:var(--red-primary);">🗑 XÓA BXH</button>
         </div>
       </div>
     `);
@@ -800,7 +832,6 @@
     beep(784, .2);
     setTimeout(() => beep(988, .3), 220);
 
-    // [MỚI] lưu thêm trường tg (tổng thời gian, giây, làm tròn 0,1)
     await ghiBXH({ id: id, ten: S.ten, K: S.K, tg: Math.round(S.tg * 10) / 10, time: new Date().toISOString() });
 
     bxhDs = await docBXH();
@@ -809,7 +840,7 @@
     const loading = $('bxhLoading');
     if (loading) loading.remove();
 
-    veBXH('k');
+    veBXH();
   }
 
   function khoiTao() {
@@ -831,9 +862,8 @@
       else if (a === 'th3') chonTH3(k, false);
       else if (a === 'th4') chonTH4(k);
       else if (a === 'ketthuc') manKetThuc();
-      else if (a === 'bxh') veBXH(b.dataset.kieu);   // [MỚI] chuyển giữa 2 bảng xếp hạng
       else if (a === 'lai') manThietLap();
-      else if (a === 'xoabxh') { ghiBXH([]); manKetThuc(); }
+      else if (a === 'xoabxh') xoaToanBoBXH();
     });
     r.addEventListener('keydown', e => {
       if (e.key !== 'Enter') return;
