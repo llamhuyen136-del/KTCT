@@ -329,10 +329,21 @@
 
   <script>
     function switchView(n) {
-      document.querySelectorAll('.view-section').forEach(s => s.classList.toggle('active', s.id === 'view-' + n));
-      document.querySelectorAll('.os-nav-btn').forEach(b => b.classList.toggle('active', (b.getAttribute('onclick') || '').includes("'" + n + "'")));
-      window.scrollTo(0, 0);
+  document.querySelectorAll('.view-section').forEach(s => s.classList.toggle('active', s.id === 'view-' + n));
+  document.querySelectorAll('.os-nav-btn').forEach(b => b.classList.toggle('active', (b.getAttribute('onclick') || '').includes("'" + n + "'")));
+  window.scrollTo(0, 0);
+
+  if (n === 'flipbook' || n === 'game') {
+    const crtBtn = document.getElementById('crtToggleBtn');
+    if (crtBtn && crtBtn.classList.contains('active')) {
+      crtBtn.classList.remove('active');
+      document.body.classList.remove('crt-enabled');
+      if (crtBtn.firstElementChild) {
+        crtBtn.firstElementChild.textContent = '📺 CRT: OFF';
+      }
     }
+  }
+}
     function openFlipbookAtSpread() { 
       switchView('flipbook'); 
     }
