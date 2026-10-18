@@ -143,6 +143,18 @@
       .os-nav-tabs { display: none; }
       .flipbook-container { height: 60vh; min-height: 420px; }
     }
+    /* Chế độ Fullscreen hỗ trợ hoàn hảo cho Mobile */
+    .flipbook-container.mobile-fullscreen-active {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 999999 !important;
+      margin: 0 !important;
+      border: none !important;
+      border-radius: 0 !important;
+    }
   </style>
 </head>
 <body class="crt-enabled">
@@ -277,7 +289,9 @@
               class="flipbook-iframe"
               src="https://heyzine.com/flip-book/8d1b1fbf46.html" 
               allowfullscreen="true"
-              allow="clipboard-write">
+              webkitallowfullscreen="true"
+              mozallowfullscreen="true"
+              allow="fullscreen; clipboard-write">
             </iframe>
           </div>
         </div>
@@ -329,53 +343,78 @@
 
   <script>
     function switchView(n) {
-  document.querySelectorAll('.view-section').forEach(s => s.classList.toggle('active', s.id === 'view-' + n));
-  document.querySelectorAll('.os-nav-btn').forEach(b => b.classList.toggle('active', (b.getAttribute('onclick') || '').includes("'" + n + "'")));
-  window.scrollTo(0, 0);
+      document.querySelectorAll('.view-section').forEach(s => s.classList.toggle('active', s.id === 'view-' + n));
+      document.querySelectorAll('.os-nav-btn').forEach(b => b.classList.toggle('active', (b.getAttribute('onclick') || '').includes("'" + n + "'")));
+      window.scrollTo(0, 0);
 
-  const crtBtn = document.getElementById('crtToggleBtn');
-  if (!crtBtn) return;
+      const crtBtn = document.getElementById('crtToggleBtn');
+      if (n === 'flipbook' || n === 'game') {
+        if (crtBtn && crtBtn.classList.contains('active')) {
+          crtBtn.classList.remove('active');
+          document.body.classList.remove('crt-enabled');
+          if (crtBtn.firstElementChild) crtBtn.firstElementChild.textContent = '📺 CRT: OFF';
+        }
+        if (n === 'flipbook') {
+          setTimeout(() => {
+            const iframe = document.getElementById('flipbookIframe');
+            if (iframe && iframe.contentWindow) iframe.contentWindow.focus();
+          }, 150);
+        }
+      } else if (n === 'home' || n === 'summary') {
+        if (crtBtn) {
+          crtBtn.classList.add('active');
+          document.body.classList.add('crt-enabled');
+          if (crtBtn.firstElementChild) crtBtn.firstElementChild.textContent = '📺 CRT: ON';
+        }
+      }
+    }
 
-  if (n === 'flipbook' || n === 'game') {
-    crtBtn.classList.remove('active');
-    document.body.classList.remove('crt-enabled');
-    if (crtBtn.firstElementChild) {
-      crtBtn.firstElementChild.textContent = '📺 CRT: OFF';
-    }
-  } 
-  else if (n === 'home' || n === 'summary') {
-    crtBtn.classList.add('active');
-    document.body.classList.add('crt-enabled');
-    if (crtBtn.firstElementChild) {
-      crtBtn.firstElementChild.textContent = '📺 CRT: ON';
-    }
-  }
-}
     function openFlipbookAtSpread() { 
       switchView('flipbook'); 
     }
+
     function reloadFlipbook() {
       const f = document.getElementById('flipbookIframe');
       if (f) { f.src = f.src; }
     }
+
     function toggleFlipbookFullscreen() {
-      const el = document.getElementById('flipbookWrapper');
-      if (!el) return;
-      if (!document.fullscreenElement) {
-        el.requestFullscreen().catch(err => alert("Không thể mở toàn màn hình: " + err.message));
+      const wrapper = document.getElementById('flipbookWrapper');
+      const iframe = document.getElementById('flipbookIframe');
+      const target = iframe || wrapper;
+      if (!target) return;
+
+      const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+      if (!isFs && !wrapper.classList.contains('mobile-fullscreen-active')) {
+        const req = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen || target.msRequestFullscreen;
+        if (req) {
+          req.call(target).catch(() => {
+            wrapper.classList.add('mobile-fullscreen-active');
+          });
+        } else {
+          wrapper.classList.add('mobile-fullscreen-active');
+        }
       } else {
-        document.exitFullscreen();
+        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+        if (isFs && exit) {
+          exit.call(document);
+        }
+        wrapper.classList.remove('mobile-fullscreen-active');
       }
     }
+
     function toggleCRT() { 
       const b = document.getElementById('crtToggleBtn'), on = b.classList.toggle('active'); 
       document.body.classList.toggle('crt-enabled', on); 
       b.firstElementChild.textContent = '📺 CRT: ' + (on ? 'ON' : 'OFF'); 
     }
+
     function toggleSound() { 
       const b = document.getElementById('soundToggleBtn'), on = b.classList.toggle('active'); 
       b.firstElementChild.textContent = '🔊 SFX: ' + (on ? 'ON' : 'OFF'); 
     }
+
     const tickClock = () => { 
       document.getElementById('osClock').textContent = new Date().toLocaleTimeString('vi-VN', { hour12: false }); 
     };
@@ -628,96 +667,96 @@
   }
 
   /* ====== CẤU HÌNH CLOUD FIREBASE REALTIME ====== */
-const FIREBASE_URL = 'https://kctcnhom5-default-rtdb.asia-southeast1.firebasedatabase.app/bxh.json';
+  const FIREBASE_URL = 'https://kctcnhom5-default-rtdb.asia-southeast1.firebasedatabase.app/bxh.json';
 
-// Đọc danh sách xếp hạng từ Cloud Firebase
-async function docBXH() {
-  try {
-    const res = await fetch(FIREBASE_URL);
-    const data = await res.json();
-    if (!data) return [];
-    return Object.keys(data).map(key => data[key]);
-  } catch (e) {
-    console.error('Lỗi tải BXH Firebase:', e);
-    try { return JSON.parse(localStorage.getItem(KHOA_BXH)) || []; } catch(err) { return []; }
+  // Đọc danh sách xếp hạng từ Cloud Firebase
+  async function docBXH() {
+    try {
+      const res = await fetch(FIREBASE_URL);
+      const data = await res.json();
+      if (!data) return [];
+      return Object.keys(data).map(key => data[key]);
+    } catch (e) {
+      console.error('Lỗi tải BXH Firebase:', e);
+      try { return JSON.parse(localStorage.getItem(KHOA_BXH)) || []; } catch(err) { return []; }
+    }
   }
-}
 
-// Ghi nhận điểm người chơi mới lên Cloud Firebase
-async function ghiBXH(nguoiChoi) {
-  try {
-    await fetch(FIREBASE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(nguoiChoi)
-    });
-  } catch (e) {
-    console.error('Lỗi lưu điểm Firebase:', e);
+  // Ghi nhận điểm người chơi mới lên Cloud Firebase
+  async function ghiBXH(nguoiChoi) {
+    try {
+      await fetch(FIREBASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nguoiChoi)
+      });
+    } catch (e) {
+      console.error('Lỗi lưu điểm Firebase:', e);
+    }
   }
-}
 
-/* --- MÀN HÌNH HỒI KẾT: TỰ ĐỘNG CẬP NHẬT BXH TRỰC TUYẾN --- */
-async function manKetThuc() {
-  tag('HỒI KẾT');
-  dungGio();
-  const id = Date.now();
-  const nhan = S.K >= 600 * TRIEU ? '🦈 CÁ MẬP — thâu tóm thị trường!' : S.K >= 300 * TRIEU ? '🐟 CÁ LỚN — đứng vững trên đỉnh' : S.K >= 150 * TRIEU ? '🐠 CÁ NHỎ — còn sống sót' : '🍤 BỊ CÁ LỚN NUỐT CHỬNG';
+  /* --- MÀN HÌNH HỒI KẾT: TỰ ĐỘNG CẬP NHẬT BXH TRỰC TUYẾN --- */
+  async function manKetThuc() {
+    tag('HỒI KẾT');
+    dungGio();
+    const id = Date.now();
+    const nhan = S.K >= 600 * TRIEU ? '🦈 CÁ MẬP — thâu tóm thị trường!' : S.K >= 300 * TRIEU ? '🐟 CÁ LỚN — đứng vững trên đỉnh' : S.K >= 150 * TRIEU ? '🐠 CÁ NHỎ — còn sống sót' : '🍤 BỊ CÁ LỚN NUỐT CHỬNG';
 
-  hien(`
-    <div class="cg-center">
-      <h2>Hồi kết: Cục diện thị trường</h2>
-      <p>Doanh nghiệp <strong>${esc(S.ten)}</strong> kết thúc cuộc đua với</p>
-      <div class="cg-big">${tien(S.K)}</div>
-      <p style="margin-bottom:12px">${nhan}</p>
-      <div id="bxhLoading" style="font-family:var(--font-mono); color:var(--cream-soft); margin: 20px 0;">
-        ⏳ Đang đồng bộ bảng xếp hạng toàn server...
+    hien(`
+      <div class="cg-center">
+        <h2>Hồi kết: Cục diện thị trường</h2>
+        <p>Doanh nghiệp <strong>${esc(S.ten)}</strong> kết thúc cuộc đua với</p>
+        <div class="cg-big">${tien(S.K)}</div>
+        <p style="margin-bottom:12px">${nhan}</p>
+        <div id="bxhLoading" style="font-family:var(--font-mono); color:var(--cream-soft); margin: 20px 0;">
+          ⏳ Đang đồng bộ bảng xếp hạng toàn server...
+        </div>
+        <div id="bxhContainer"></div>
+        <div class="cta-row" style="justify-content:center; margin-top:20px;">
+          <button class="retro-btn primary" data-act="lai">🔄 CHƠI LẠI</button>
+          <button class="retro-btn secondary" onclick="switchView('summary')">📌 XEM KẾT LUẬN</button>
+        </div>
       </div>
-      <div id="bxhContainer"></div>
-      <div class="cta-row" style="justify-content:center; margin-top:20px;">
-        <button class="retro-btn primary" data-act="lai">🔄 CHƠI LẠI</button>
-        <button class="retro-btn secondary" onclick="switchView('summary')">📌 XEM KẾT LUẬN</button>
-      </div>
-    </div>
-  `);
+    `);
 
-  beep(784, .2);
-  setTimeout(() => beep(988, .3), 220);
+    beep(784, .2);
+    setTimeout(() => beep(988, .3), 220);
 
-  // 1. Tự động đẩy điểm ván này lên Firebase
-  await ghiBXH({ id: id, ten: S.ten, K: S.K, time: new Date().toISOString() });
+    // 1. Tự động đẩy điểm ván này lên Firebase
+    await ghiBXH({ id: id, ten: S.ten, K: S.K, time: new Date().toISOString() });
 
-  // 2. Kéo toàn bộ bảng xếp hạng của mọi người về và sắp xếp
-  const ds = await docBXH();
-  ds.sort((a, b) => b.K - a.K);
-  const top = ds.slice(0, 10);
-  const hang = ds.findIndex(x => x.id === id) + 1;
+    // 2. Kéo toàn bộ bảng xếp hạng của mọi người về và sắp xếp
+    const ds = await docBXH();
+    ds.sort((a, b) => b.K - a.K);
+    const top = ds.slice(0, 10);
+    const hang = ds.findIndex(x => x.id === id) + 1;
 
-  // 3. Hiển thị bảng kết quả
-  const loading = $('bxhLoading');
-  if (loading) loading.remove();
+    // 3. Hiển thị bảng kết quả
+    const loading = $('bxhLoading');
+    if (loading) loading.remove();
 
-  const container = $('bxhContainer');
-  if (container) {
-    container.innerHTML = `
-      <p style="margin-bottom:12px; font-weight:bold; color:var(--red-bright)">
-        Vị trí của bạn: Hạng #${hang > 0 ? hang : 'N/A'} trên toàn hệ thống
-      </p>
-      <table class="cg-table">
-        <tr><th>HẠNG</th><th>DOANH NGHIỆP</th><th>TỔNG TƯ BẢN K</th></tr>
-        ${top.map((x, i) => `
-          <tr class="${x.id === id ? 'me' : ''}">
-            <td>#${i + 1}</td>
-            <td>${esc(x.ten)}</td>
-            <td>${tien(x.K)}</td>
-          </tr>
-        `).join('')}
-      </table>
-      <p style="font-size:.8rem;color:var(--cream-muted);margin-top:10px">
-        🌐 Dữ liệu được đồng bộ trực tuyến tự động từ Firebase.
-      </p>
-    `;
+    const container = $('bxhContainer');
+    if (container) {
+      container.innerHTML = `
+        <p style="margin-bottom:12px; font-weight:bold; color:var(--red-bright)">
+          Vị trí của bạn: Hạng #${hang > 0 ? hang : 'N/A'} trên toàn hệ thống
+        </p>
+        <table class="cg-table">
+          <tr><th>HẠNG</th><th>DOANH NGHIỆP</th><th>TỔNG TƯ BẢN K</th></tr>
+          ${top.map((x, i) => `
+            <tr class="${x.id === id ? 'me' : ''}">
+              <td>#${i + 1}</td>
+              <td>${esc(x.ten)}</td>
+              <td>${tien(x.K)}</td>
+            </tr>
+          `).join('')}
+        </table>
+        <p style="font-size:.8rem;color:var(--cream-muted);margin-top:10px">
+          🌐 Dữ liệu được đồng bộ trực tuyến tự động từ Firebase.
+        </p>
+      `;
+    }
   }
-}
 
   function khoiTao() {
     const r = root(); if (!r) return;
