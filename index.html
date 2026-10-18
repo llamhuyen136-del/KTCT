@@ -333,14 +333,21 @@
   document.querySelectorAll('.os-nav-btn').forEach(b => b.classList.toggle('active', (b.getAttribute('onclick') || '').includes("'" + n + "'")));
   window.scrollTo(0, 0);
 
+  const crtBtn = document.getElementById('crtToggleBtn');
+  if (!crtBtn) return;
+
   if (n === 'flipbook' || n === 'game') {
-    const crtBtn = document.getElementById('crtToggleBtn');
-    if (crtBtn && crtBtn.classList.contains('active')) {
-      crtBtn.classList.remove('active');
-      document.body.classList.remove('crt-enabled');
-      if (crtBtn.firstElementChild) {
-        crtBtn.firstElementChild.textContent = '📺 CRT: OFF';
-      }
+    crtBtn.classList.remove('active');
+    document.body.classList.remove('crt-enabled');
+    if (crtBtn.firstElementChild) {
+      crtBtn.firstElementChild.textContent = '📺 CRT: OFF';
+    }
+  } 
+  else if (n === 'home' || n === 'summary') {
+    crtBtn.classList.add('active');
+    document.body.classList.add('crt-enabled');
+    if (crtBtn.firstElementChild) {
+      crtBtn.firstElementChild.textContent = '📺 CRT: ON';
     }
   }
 }
