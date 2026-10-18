@@ -143,7 +143,8 @@
       .os-nav-tabs { display: none; }
       .flipbook-container { height: 60vh; min-height: 420px; }
     }
-    /* Chế độ Fullscreen hỗ trợ hoàn hảo cho Mobile */
+    
+    /* Chế độ toàn màn hình cho Flipbook trên điện thoại */
     .flipbook-container.mobile-fullscreen-active {
       position: fixed !important;
       top: 0 !important;
@@ -348,19 +349,24 @@
       window.scrollTo(0, 0);
 
       const crtBtn = document.getElementById('crtToggleBtn');
+
+      // Tắt CRT khi xem Flipbook hoặc Game
       if (n === 'flipbook' || n === 'game') {
         if (crtBtn && crtBtn.classList.contains('active')) {
           crtBtn.classList.remove('active');
           document.body.classList.remove('crt-enabled');
           if (crtBtn.firstElementChild) crtBtn.firstElementChild.textContent = '📺 CRT: OFF';
         }
+        // Tự động focus con trỏ vào khung lật trang
         if (n === 'flipbook') {
           setTimeout(() => {
             const iframe = document.getElementById('flipbookIframe');
             if (iframe && iframe.contentWindow) iframe.contentWindow.focus();
           }, 150);
         }
-      } else if (n === 'home' || n === 'summary') {
+      } 
+      // Bật lại CRT khi quay về Home hoặc Kết luận
+      else if (n === 'home' || n === 'summary') {
         if (crtBtn) {
           crtBtn.classList.add('active');
           document.body.classList.add('crt-enabled');
@@ -378,29 +384,45 @@
       if (f) { f.src = f.src; }
     }
 
+    // Cơ chế toàn màn hình linh hoạt cho cả máy tính & điện thoại
     function toggleFlipbookFullscreen() {
       const wrapper = document.getElementById('flipbookWrapper');
       const iframe = document.getElementById('flipbookIframe');
       const target = iframe || wrapper;
-      if (!target) return;
+      if (!wrapper) return;
 
       const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
 
-      if (!isFs && !wrapper.classList.contains('mobile-fullscreen-active')) {
-        const req = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen || target.msRequestFullscreen;
-        if (req) {
-          req.call(target).catch(() => {
-            wrapper.classList.add('mobile-fullscreen-active');
-          });
-        } else {
-          wrapper.classList.add('mobile-fullscreen-active');
-        }
-      } else {
+      if (isFs || wrapper.classList.contains('mobile-fullscreen-active')) {
         const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
         if (isFs && exit) {
-          exit.call(document);
+          exit.call(document).catch(() => {});
         }
         wrapper.classList.remove('mobile-fullscreen-active');
+        const exitBtn = document.getElementById('mobileExitFsBtn');
+        if (exitBtn) exitBtn.remove();
+        return;
+      }
+
+      const req = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen || target.msRequestFullscreen;
+      if (req) {
+        req.call(target).catch(() => {
+          kichHoatFullscreenMobile(wrapper);
+        });
+      } else {
+        kichHoatFullscreenMobile(wrapper);
+      }
+    }
+
+    function kichHoatFullscreenMobile(wrapper) {
+      wrapper.classList.add('mobile-fullscreen-active');
+      if (!document.getElementById('mobileExitFsBtn')) {
+        const btn = document.createElement('button');
+        btn.id = 'mobileExitFsBtn';
+        btn.textContent = '✕ THU NHỎ';
+        btn.setAttribute('style', 'position:fixed; top:12px; right:12px; z-index:1000000; background:rgba(206,41,26,0.9); color:#fff; border:2px solid #fff; padding:6px 14px; font-weight:bold; font-family:monospace; border-radius:4px; font-size:12px; cursor:pointer;');
+        btn.onclick = toggleFlipbookFullscreen;
+        document.body.appendChild(btn);
       }
     }
 
@@ -421,7 +443,7 @@
     tickClock(); setInterval(tickClock, 1000);
   </script>
 
-  <!-- MÃ NGUỒN ARCADE GAME -->
+  <!-- MÃ NGUỒN ARCADE GAME & FIREBASE REALTIME -->
   <script>
 (function () {
   const TEN_GAME = 'CAPITAL RUSH';
@@ -669,7 +691,6 @@
   /* ====== CẤU HÌNH CLOUD FIREBASE REALTIME ====== */
   const FIREBASE_URL = 'https://kctcnhom5-default-rtdb.asia-southeast1.firebasedatabase.app/bxh.json';
 
-  // Đọc danh sách xếp hạng từ Cloud Firebase
   async function docBXH() {
     try {
       const res = await fetch(FIREBASE_URL);
@@ -682,7 +703,6 @@
     }
   }
 
-  // Ghi nhận điểm người chơi mới lên Cloud Firebase
   async function ghiBXH(nguoiChoi) {
     try {
       await fetch(FIREBASE_URL, {
@@ -695,7 +715,7 @@
     }
   }
 
-  /* --- MÀN HÌNH HỒI KẾT: TỰ ĐỘNG CẬP NHẬT BXH TRỰC TUYẾN --- */
+  /* --- MÀN HÌNH HỒI KẾT: ĐỒNG BỘ TRỰC TUYẾN TOÀN SERVER --- */
   async function manKetThuc() {
     tag('HỒI KẾT');
     dungGio();
@@ -722,16 +742,13 @@
     beep(784, .2);
     setTimeout(() => beep(988, .3), 220);
 
-    // 1. Tự động đẩy điểm ván này lên Firebase
     await ghiBXH({ id: id, ten: S.ten, K: S.K, time: new Date().toISOString() });
 
-    // 2. Kéo toàn bộ bảng xếp hạng của mọi người về và sắp xếp
     const ds = await docBXH();
     ds.sort((a, b) => b.K - a.K);
     const top = ds.slice(0, 10);
     const hang = ds.findIndex(x => x.id === id) + 1;
 
-    // 3. Hiển thị bảng kết quả
     const loading = $('bxhLoading');
     if (loading) loading.remove();
 
