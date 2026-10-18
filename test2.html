@@ -7,26 +7,26 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-dark: #120F0D;
-      --bg-surface: #1A1512;
-      --bg-surface-hover: #241D19;
+      --bg-dark: #0f0d0b;
+      --bg-surface: #181411;
+      --bg-surface-elevated: #221c17;
       --red-main: #CE291A;
       --red-bright: #F7523F;
-      --red-glow: rgba(206, 41, 26, 0.35);
+      --red-glow: rgba(206, 41, 26, 0.45);
       --cream: #FAF4EC;
       --cream-dim: #E6CAA7;
-      --cream-muted: #8E7E6E;
+      --cream-muted: #807060;
       --border: rgba(230, 202, 167, 0.12);
-      --border-accent: rgba(206, 41, 26, 0.45);
+      --border-accent: rgba(206, 41, 26, 0.5);
       --font-body: 'Plus Jakarta Sans', sans-serif;
       --font-mono: 'Space Mono', monospace;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
       background-color: var(--bg-dark);
@@ -38,64 +38,83 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* === PX PUSH SIGNATURE: CUSTOM CURSOR === */
-    .cursor-dot {
-      position: fixed;
-      top: 0; left: 0;
-      width: 8px; height: 8px;
-      background: var(--red-bright);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 999999;
-      transform: translate(-50%, -50%);
-      transition: opacity 0.2s ease;
+    /* === PX PUSH SIGNATURE: CUSTOM MOUSE CURSOR === */
+    @media (pointer: fine) {
+      * { cursor: none !important; }
+      .cursor-dot {
+        position: fixed;
+        top: 0; left: 0;
+        width: 8px; height: 8px;
+        background: var(--red-bright);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999999;
+        transform: translate(-50%, -50%);
+        transition: opacity 0.2s ease;
+      }
+      .cursor-ring {
+        position: fixed;
+        top: 0; left: 0;
+        width: 36px; height: 36px;
+        border: 1.5px solid var(--cream-dim);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999998;
+        transform: translate(-50%, -50%);
+        transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                    height 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                    border-color 0.25s ease, 
+                    background-color 0.25s ease;
+      }
+      .cursor-ring.active {
+        width: 68px; height: 68px;
+        border-color: var(--red-bright);
+        background-color: rgba(206, 41, 26, 0.15);
+      }
     }
-    .cursor-ring {
-      position: fixed;
-      top: 0; left: 0;
-      width: 38px; height: 38px;
-      border: 1.5px solid var(--cream-dim);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 999998;
-      transform: translate(-50%, -50%);
-      transition: width 0.25s ease-out, height 0.25s ease-out, border-color 0.25s ease-out, background-color 0.25s ease-out;
-    }
-    .cursor-ring.active {
-      width: 64px; height: 64px;
-      border-color: var(--red-bright);
-      background-color: rgba(206, 41, 26, 0.12);
+    @media (pointer: coarse) {
+      .cursor-dot, .cursor-ring { display: none !important; }
     }
 
-    /* === NOISE & GRID AMBIENCE === */
+    /* === BACKGROUND GRID === */
     .bg-grid {
       position: fixed;
       inset: 0;
       background-size: 50px 50px;
-      background-image: linear-gradient(to right, rgba(230, 202, 167, 0.02) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(230, 202, 167, 0.02) 1px, transparent 1px);
+      background-image: 
+        linear-gradient(to right, rgba(230, 202, 167, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(230, 202, 167, 0.025) 1px, transparent 1px);
       pointer-events: none;
       z-index: 1;
     }
 
-    /* === HEADER & NAVIGATION (PX PUSH STYLE) === */
-    .nav-bar {
-      position: sticky;
-      top: 0;
+    /* === ADAPTIVE FLOATING HEADER (PX PUSH DOCK) === */
+    .nav-container {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 48px);
+      max-width: 1360px;
       z-index: 1000;
-      background: rgba(18, 15, 13, 0.88);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-bar {
+      background: rgba(24, 20, 17, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 8px;
       display: flex;
       justify-content: space-between;
       align-items: stretch;
-      height: 68px;
+      height: 60px;
+      overflow: hidden;
     }
     .nav-brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 0 28px;
+      padding: 0 24px;
       border-right: 1px solid var(--border);
       font-family: var(--font-mono);
       font-weight: 700;
@@ -103,28 +122,31 @@
       letter-spacing: -0.5px;
       text-decoration: none;
       color: var(--cream);
+      flex-shrink: 0;
     }
     .brand-pulse {
       width: 8px; height: 8px;
       background: var(--red-main);
       border-radius: 50%;
-      box-shadow: 0 0 12px var(--red-main);
+      box-shadow: 0 0 10px var(--red-main);
       animation: pulseGlow 2s infinite;
     }
     @keyframes pulseGlow {
       0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.6; }
+      50% { transform: scale(1.4); opacity: 0.5; }
     }
     .nav-items {
       display: flex;
       overflow-x: auto;
+      scrollbar-width: none;
     }
+    .nav-items::-webkit-scrollbar { display: none; }
     .nav-btn {
       height: 100%;
-      padding: 0 22px;
+      padding: 0 20px;
       background: transparent;
       border: none;
-      border-right: 1px solid var(--border);
+      border-left: 1px solid var(--border);
       color: var(--cream-muted);
       font-family: var(--font-mono);
       font-size: 0.76rem;
@@ -133,43 +155,41 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      white-space: nowrap;
     }
     .nav-btn .num {
       color: var(--red-main);
       font-weight: 700;
-      font-size: 0.72rem;
     }
     .nav-btn:hover {
       color: var(--cream);
-      background: var(--bg-surface);
+      background: var(--bg-surface-elevated);
     }
     .nav-btn.active {
       color: #fff;
-      background: var(--bg-surface-hover);
-    }
-    .nav-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--red-bright);
+      background: var(--bg-surface-elevated);
+      box-shadow: inset 0 -2px 0 var(--red-bright);
     }
 
-    /* === MARQUEE TICKER (PX PUSH CHUYỂN ĐỘNG CHỮ CHẠY VÔ TẬN) === */
+    /* === CONTINUOUS MARQUEE TICKER === */
     .marquee-wrap {
+      margin-top: 100px;
+      border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
       overflow: hidden;
       background: var(--bg-surface);
       white-space: nowrap;
-      padding: 12px 0;
+      padding: 14px 0;
       user-select: none;
+      position: relative;
+      z-index: 2;
     }
     .marquee-track {
       display: inline-flex;
-      gap: 32px;
-      animation: marqueeScroll 22s linear infinite;
+      gap: 36px;
+      animation: marqueeScroll 24s linear infinite;
     }
     .marquee-track span {
       font-family: var(--font-mono);
@@ -190,27 +210,30 @@
       to { transform: translateX(-50%); }
     }
 
-    /* === CHUYỂN CẢNH VIEW / TAB === */
-    .view-panel {
-      display: none;
-      opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
+    /* === SECTIONS CONTAINER === */
+    .flow-section {
       position: relative;
       z-index: 2;
-    }
-    .view-panel.active {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* === HERO SECTION (PX PUSH EDITORIAL) === */
-    .hero-box {
       max-width: 1360px;
       margin: 0 auto;
-      padding: 72px 28px 48px;
+      padding: 96px 28px;
+      border-bottom: 1px solid var(--border);
     }
+    .flow-section:last-of-type {
+      border-bottom: none;
+    }
+
+    /* === TEXT SCRUBBING EFFECT (PX PUSH) === */
+    .scrub-text {
+      color: rgba(250, 244, 236, 0.2);
+      transition: color 0.2s ease;
+      display: inline;
+    }
+    .scrub-text.active {
+      color: var(--cream);
+    }
+
+    /* === HERO TYPOGRAPHY === */
     .pill-tag {
       display: inline-flex;
       align-items: center;
@@ -230,7 +253,7 @@
       background: var(--red-bright);
     }
     .hero-title {
-      font-size: clamp(2.4rem, 6.2vw, 5.4rem);
+      font-size: clamp(2.6rem, 6.8vw, 6rem);
       font-weight: 800;
       line-height: 1.02;
       letter-spacing: -2px;
@@ -241,22 +264,24 @@
       color: var(--red-bright);
       font-style: italic;
     }
-
-    /* === BENTO GRID HERO === */
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.6fr 1fr;
+      grid-template-columns: 1.55fr 1fr;
       gap: 24px;
     }
+
+    /* === BENTO CARDS === */
     .bento-card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 36px;
+      border-radius: 6px;
+      padding: 38px 34px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+                  border-color 0.35s ease, 
+                  background-color 0.35s ease;
       position: relative;
       overflow: hidden;
     }
@@ -270,14 +295,13 @@
     }
     .bento-card:hover {
       border-color: var(--border-accent);
-      background: var(--bg-surface-hover);
+      background: var(--bg-surface-elevated);
       transform: translateY(-4px);
     }
     .bento-card:hover::before {
       opacity: 1;
       box-shadow: 0 0 16px var(--red-glow);
     }
-
     .card-meta {
       font-family: var(--font-mono);
       font-size: 0.72rem;
@@ -296,13 +320,13 @@
       margin-bottom: 24px;
     }
     .desc-text {
-      font-size: 0.94rem;
+      font-size: 0.95rem;
       color: var(--cream-muted);
       line-height: 1.65;
       margin-bottom: 32px;
     }
 
-    /* === INTERACTIVE BUTTONS WITH HOVER MOTION === */
+    /* === INTERACTIVE BUTTONS === */
     .btn-group {
       display: flex;
       flex-wrap: wrap;
@@ -323,6 +347,7 @@
       text-decoration: none;
       position: relative;
       overflow: hidden;
+      cursor: pointer;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .px-btn.primary {
@@ -335,7 +360,7 @@
       transform: translateY(-2px);
     }
     .px-btn.secondary {
-      background: var(--bg-surface-hover);
+      background: var(--bg-surface-elevated);
       border-color: var(--border);
       color: var(--cream-dim);
     }
@@ -351,7 +376,7 @@
       transform: translate(3px, -3px);
     }
 
-    /* === DASHBOARD STATS CARD === */
+    /* STAT LIST */
     .stat-list {
       display: flex;
       flex-direction: column;
@@ -371,12 +396,7 @@
     .stat-label { color: var(--cream-muted); }
     .stat-value { font-weight: 700; color: var(--red-bright); }
 
-    /* === MODULES SECTION (3 CARDS) === */
-    .section-wrap {
-      max-width: 1360px;
-      margin: 0 auto;
-      padding: 48px 28px 64px;
-    }
+    /* === MODULES SECTION === */
     .section-header {
       display: flex;
       justify-content: space-between;
@@ -386,7 +406,7 @@
       margin-bottom: 36px;
     }
     .section-title {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: -0.5px;
@@ -399,17 +419,16 @@
     .module-card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
-      padding: 32px 28px;
+      padding: 34px 28px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      border-radius: 4px;
+      border-radius: 6px;
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
     }
     .module-card:hover {
       border-color: var(--border-accent);
-      background: var(--bg-surface-hover);
+      background: var(--bg-surface-elevated);
       transform: translateY(-6px);
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
     }
@@ -455,7 +474,7 @@
       font-weight: 700;
     }
 
-    /* === FLIPBOOK & GAME WRAPPERS === */
+    /* === FLIPBOOK & INTERACTIVE FRAMES === */
     .action-topbar {
       display: flex;
       justify-content: space-between;
@@ -465,19 +484,28 @@
       background: var(--bg-surface);
       border: 1px solid var(--border);
       padding: 16px 24px;
-      border-radius: 4px;
+      border-radius: 6px;
       margin-bottom: 20px;
       font-family: var(--font-mono);
       font-size: 0.84rem;
     }
     .interactive-frame {
       width: 100%;
-      height: 78vh;
-      min-height: 620px;
+      height: 80vh;
+      min-height: 640px;
       background: #000;
       border: 1px solid var(--border);
-      border-radius: 4px;
+      border-radius: 6px;
       overflow: hidden;
+      position: relative;
+    }
+    .interactive-frame.mobile-fullscreen-active {
+      position: fixed !important;
+      top: 0 !important; left: 0 !important;
+      width: 100vw !important; height: 100vh !important;
+      z-index: 9999999 !important;
+      border: none !important;
+      border-radius: 0 !important;
     }
     .interactive-frame iframe {
       width: 100%;
@@ -491,7 +519,7 @@
       margin: 0 auto;
       background: var(--bg-surface);
       border: 1px solid var(--border);
-      border-radius: 4px;
+      border-radius: 6px;
       padding: 40px 32px;
     }
     .game-center {
@@ -501,7 +529,7 @@
       align-items: center;
     }
     .game-quote {
-      background: var(--bg-surface-hover);
+      background: var(--bg-surface-elevated);
       border-left: 3px solid var(--red-main);
       padding: 14px 20px;
       margin: 20px 0;
@@ -557,7 +585,7 @@
       margin: 22px 0;
     }
     .quiz-card-btn {
-      background: var(--bg-surface-hover);
+      background: var(--bg-surface-elevated);
       border: 1px solid var(--border);
       color: var(--cream);
       padding: 18px 20px;
@@ -568,6 +596,7 @@
       display: flex;
       gap: 12px;
       align-items: flex-start;
+      cursor: pointer;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .quiz-card-btn:hover:not(:disabled) {
@@ -600,7 +629,6 @@
       text-align: left;
     }
     .feedback-box.show { display: block; }
-
     .score-display {
       font-size: 2.8rem;
       font-weight: 800;
@@ -619,9 +647,10 @@
       padding: 12px 16px;
       border: 1px solid var(--border);
       text-align: left;
+      word-break: break-word;
     }
     .leaderboard-tbl th {
-      background: var(--bg-surface-hover);
+      background: var(--bg-surface-elevated);
       color: var(--red-bright);
     }
     .leaderboard-tbl tr.highlight-me {
@@ -653,8 +682,9 @@
     @media (max-width: 992px) {
       .hero-grid, .grid-3, .quiz-grid { grid-template-columns: 1fr; }
       .nav-brand span.hide-m { display: none; }
-      .interactive-frame { height: 60vh; min-height: 440px; }
+      .interactive-frame { height: 62vh; min-height: 440px; }
       .hero-title { font-size: 2.3rem; }
+      .nav-container { top: 10px; width: calc(100% - 20px); }
     }
   </style>
 </head>
@@ -667,23 +697,25 @@
   <!-- BACKGROUND SUBTLE GRID -->
   <div class="bg-grid"></div>
 
-  <!-- NAVIGATION HEADER -->
-  <header class="nav-bar">
-    <a href="#" class="nav-brand" onclick="switchView('home')">
-      <div class="brand-pulse"></div>
-      <span>CAPITAL // PUSH</span>
-      <span class="hide-m" style="color:var(--cream-muted);font-weight:400;">— KTCT MÁC-LÊNIN</span>
-    </a>
-    <nav class="nav-items">
-      <button class="nav-btn active" onclick="switchView('home')"><span class="num">01</span> INTRO</button>
-      <button class="nav-btn" onclick="switchView('modules')"><span class="num">02</span> LÝ LUẬN</button>
-      <button class="nav-btn" onclick="switchView('flipbook')"><span class="num">03</span> FLIPBOOK</button>
-      <button class="nav-btn" onclick="switchView('game')"><span class="num">04</span> MÔ PHỎNG</button>
-      <button class="nav-btn" onclick="switchView('summary')"><span class="num">05</span> TỔNG KẾT</button>
-    </nav>
-  </header>
+  <!-- FLOATING ADAPTIVE NAV DOCK (PX PUSH) -->
+  <div class="nav-container">
+    <header class="nav-bar">
+      <a href="#hero" class="nav-brand">
+        <div class="brand-pulse"></div>
+        <span>CAPITAL // PUSH</span>
+        <span class="hide-m" style="color:var(--cream-muted);font-weight:400;">— KTCT MÁC-LÊNIN</span>
+      </a>
+      <nav class="nav-items" id="mainNav">
+        <a href="#hero" class="nav-btn active"><span class="num">01</span> INTRO</a>
+        <a href="#theories" class="nav-btn"><span class="num">02</span> LÝ LUẬN</a>
+        <a href="#flipbook" class="nav-btn"><span class="num">03</span> FLIPBOOK</a>
+        <a href="#simulation" class="nav-btn"><span class="num">04</span> MÔ PHỎNG</a>
+        <a href="#conclusion" class="nav-btn"><span class="num">05</span> TỔNG KẾT</a>
+      </nav>
+    </header>
+  </div>
 
-  <!-- MARQUEE RUNNING TICKER (PX PUSH MOTION) -->
+  <!-- CONTINUOUS TICKER -->
   <div class="marquee-wrap">
     <div class="marquee-track">
       <span>KINH TẾ CHÍNH TRỊ MÁC - LÊNIN</span>
@@ -697,229 +729,238 @@
     </div>
   </div>
 
-  <!-- VIEW 1: HOME INTRO (PX PUSH STUDIO LAYOUT) -->
-  <main id="view-home" class="view-panel active">
-    <div class="hero-box">
-      <div class="pill-tag">
-        <span class="red-dot"></span>
-        <span>CHƯƠNG 3 // MỤC II: TÍCH LŨY TƯ BẢN</span>
-      </div>
-
-      <h1 class="hero-title">
-        TÍCH LŨY TƯ BẢN &amp; <br />
-        BÀI TOÁN <span class="highlight">GIÁ TRỊ THẶNG DƯ</span>
-      </h1>
-
-      <div class="hero-grid">
-        <!-- Vấn đề nhập vai -->
-        <div class="bento-card">
-          <div>
-            <div class="card-meta">
-              <span>Nº001 // ROLEPLAY PROMPT</span>
-              <span style="color:var(--red-bright);">CRITICAL THEORY</span>
-            </div>
-            <h2 class="prompt-text">
-              “Anh/Chị là một nhà tư bản, sau khi thực hiện hành vi bóc lột giai cấp công nhân và thu về giá trị thặng dư (m) thì anh/chị sẽ sử dụng khoản giá trị đó như thế nào?”
-            </h2>
-            <p class="desc-text">
-              Quy luật cạnh tranh và quy luật giá trị thặng dư buộc nhà tư bản phải tư bản hóa thặng dư để tái sản xuất mở rộng. Khám phá các hệ quả kinh tế qua sách lật và trò chơi mô phỏng.
-            </p>
-          </div>
-          <div class="btn-group">
-            <button class="px-btn primary" onclick="switchView('flipbook')">
-              <span>Đọc Flipbook Ngay</span>
-              <span class="arrow-icon">↗</span>
-            </button>
-            <button class="px-btn secondary" onclick="switchView('game')">
-              <span>Vào Game Mô Phỏng</span>
-              <span class="arrow-icon">↗</span>
-            </button>
-            <button class="px-btn secondary" onclick="switchView('modules')">
-              <span>Xem 3 Chuyên Đề</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Bảng thông số mô hình -->
-        <div class="bento-card">
-          <div>
-            <div class="card-meta">
-              <span>Nº002 // FORMULA STATS</span>
-              <span>C + V + M</span>
-            </div>
-            <div style="font-size:1.15rem;font-weight:700;margin-bottom:20px;color:var(--cream-dim);">
-              Hệ Thống Tái Sản Xuất
-            </div>
-            <div class="stat-list">
-              <div class="stat-item">
-                <span class="stat-label">Nguồn gốc tích lũy:</span>
-                <span class="stat-value">Giá trị thặng dư (m)</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Tái sản xuất giản đơn:</span>
-                <span class="stat-value" style="color:var(--cream);">Tiêu dùng hết m</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Tái sản xuất mở rộng:</span>
-                <span class="stat-value">Tư bản hóa m (Δc + Δv)</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Cấu tạo hữu cơ (c/v):</span>
-                <span class="stat-value">Tăng không ngừng</span>
-              </div>
-            </div>
-          </div>
-          <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);padding-top:20px;border-top:1px solid var(--border);margin-top:24px;">
-            DỰ ÁN NGHIÊN CỨU &amp; TRUYỀN THÔNG HỌC THUẬT // NHÓM 5
-          </div>
-        </div>
-      </div>
+  <!-- SECTION 1: HERO / INTRO -->
+  <section id="hero" class="flow-section scroll-spy-target">
+    <div class="pill-tag">
+      <span class="red-dot"></span>
+      <span>CHƯƠNG 3 // MỤC II: TÍCH LŨY TƯ BẢN</span>
     </div>
-  </main>
 
-  <!-- VIEW 2: MODULES KIẾN THỨC -->
-  <section id="view-modules" class="view-panel">
-    <div class="section-wrap">
-      <div class="section-header">
+    <h1 class="hero-title">
+      TÍCH LŨY TƯ BẢN &amp; <br />
+      BÀI TOÁN <span class="highlight">GIÁ TRỊ THẶNG DƯ</span>
+    </h1>
+
+    <div class="hero-grid">
+      <!-- Vấn đề nhập vai -->
+      <div class="bento-card">
         <div>
-          <div class="card-meta" style="margin-bottom:8px;">Nº003 // CORE CURRICULUM</div>
-          <h2 class="section-title">Hệ Thống Lý Luận Trọng Tâm</h2>
-        </div>
-        <button class="px-btn secondary" onclick="switchView('flipbook')">
-          <span>Xem Trên Flipbook</span>
-          <span class="arrow-icon">↗</span>
-        </button>
-      </div>
-
-      <div class="grid-3">
-        <!-- Module 1 -->
-        <div class="module-card">
-          <div>
-            <span class="module-num">SECTION 01</span>
-            <h3 class="module-heading">Bản chất của tích lũy tư bản</h3>
-            <p class="module-desc">Thực chất của tích lũy tư bản là biến một phần giá trị thặng dư thành tư bản phụ thêm để mở rộng sản xuất.</p>
-            <ul class="module-points">
-              <li>Nguồn gốc duy nhất: Giá trị thặng dư (m)</li>
-              <li>Tái sản xuất giản đơn vs. Tái sản xuất mở rộng</li>
-              <li>Tư bản hóa giá trị thặng dư (Δc + Δv)</li>
-            </ul>
+          <div class="card-meta">
+            <span>Nº001 // ROLEPLAY PROMPT</span>
+            <span style="color:var(--red-bright);">CRITICAL THEORY</span>
           </div>
-          <button class="px-btn secondary" onclick="switchView('flipbook')">
-            <span>Đọc chi tiết</span>
-            <span class="arrow-icon">↗</span>
-          </button>
+          <h2 class="prompt-text">
+            “Anh/Chị là một nhà tư bản, sau khi thực hiện hành vi bóc lột giai cấp công nhân và thu về giá trị thặng dư (m) thì anh/chị sẽ sử dụng khoản giá trị đó như thế nào?”
+          </h2>
+          <p class="desc-text">
+            Dưới áp lực của quy luật cạnh tranh và quy luật giá trị thặng dư, nhà tư bản buộc phải tư bản hóa giá trị thặng dư để tái sản xuất mở rộng[cite: 1]. Khám phá toàn bộ lý thuyết và trải nghiệm qua mô phỏng tương tác.
+          </p>
         </div>
-
-        <!-- Module 2 -->
-        <div class="module-card">
-          <div>
-            <span class="module-num">SECTION 02</span>
-            <h3 class="module-heading">Nhân tố ảnh hưởng quy mô</h3>
-            <p class="module-desc">Khi tỷ lệ phân chia tích lũy/tiêu dùng xác định, quy mô tích lũy phụ thuộc khối lượng m qua 4 nhân tố.</p>
-            <ul class="module-points">
-              <li>Trình độ bóc lột sức lao động (m')</li>
-              <li>Năng suất lao động xã hội</li>
-              <li>Chênh lệch tư bản sử dụng &amp; tiêu dùng</li>
-              <li>Quy mô tư bản ứng trước (K)</li>
-            </ul>
-          </div>
-          <button class="px-btn secondary" onclick="switchView('flipbook')">
-            <span>Đọc chi tiết</span>
-            <span class="arrow-icon">↗</span>
-          </button>
-        </div>
-
-        <!-- Module 3 -->
-        <div class="module-card">
-          <div>
-            <span class="module-num">SECTION 03</span>
-            <h3 class="module-heading">Một số quy luật và hệ quả</h3>
-            <p class="module-desc">Tích lũy thúc đẩy lực lượng sản xuất nhưng phân hóa cực đoan quan hệ sản xuất tư bản chủ nghĩa.</p>
-            <ul class="module-points">
-              <li>Tích tụ tư bản và Tập trung tư bản</li>
-              <li>Tăng cấu tạo hữu cơ tư bản (c/v)</li>
-              <li>Bần cùng hóa công nhân &amp; Thất nghiệp</li>
-            </ul>
-          </div>
-          <button class="px-btn secondary" onclick="switchView('flipbook')">
-            <span>Đọc chi tiết</span>
-            <span class="arrow-icon">↗</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- VIEW 3: HEYZINE FLIPBOOK EMBED -->
-  <section id="view-flipbook" class="view-panel">
-    <div class="section-wrap">
-      <div class="action-topbar">
-        <div>
-          <span style="color:var(--cream-muted);">Nº004 // E-BOOK</span>
-          <strong style="margin-left:12px;color:var(--cream);">Sách lật điện tử Heyzine (10 Trang)</strong>
-        </div>
-        <div style="display:flex;gap:10px;">
-          <a href="https://heyzine.com/flip-book/8d1b1fbf46.html" target="_blank" rel="noopener noreferrer" class="px-btn secondary" style="padding:10px 16px;font-size:0.75rem;">
-            <span>Mở Tab Mới</span>
+        <div class="btn-group">
+          <a href="#flipbook" class="px-btn primary">
+            <span>Đọc Flipbook Ngay</span>
             <span class="arrow-icon">↗</span>
           </a>
-          <button onclick="reloadFlipbook()" class="px-btn secondary" style="padding:10px 16px;font-size:0.75rem;">🔄 Tải lại</button>
-          <button onclick="toggleFlipbookFullscreen()" class="px-btn primary" style="padding:10px 16px;font-size:0.75rem;">⛶ Toàn màn hình</button>
+          <a href="#simulation" class="px-btn secondary">
+            <span>Vào Game Mô Phỏng</span>
+            <span class="arrow-icon">↗</span>
+          </a>
+          <a href="#theories" class="px-btn secondary">
+            <span>Xem 3 Chuyên Đề</span>
+          </a>
         </div>
       </div>
 
-      <div class="interactive-frame" id="flipbookWrapper">
-        <iframe 
-          id="flipbookIframe" 
-          src="https://heyzine.com/flip-book/8d1b1fbf46.html" 
-          allowfullscreen="true" 
-          allow="clipboard-write">
-        </iframe>
-      </div>
-    </div>
-  </section>
-
-  <!-- VIEW 4: ARCADE GAME CAPITAL RUSH -->
-  <section id="view-game" class="view-panel">
-    <div class="section-wrap">
-      <div class="action-topbar">
-        <div>
-          <span style="color:var(--cream-muted);">Nº005 // SIMULATION</span>
-          <strong style="margin-left:12px;color:var(--cream);">Capital Rush — Cuộc Đua Tư Bản</strong>
-        </div>
-        <span id="cgPhaseTag" style="font-family:var(--font-mono);color:var(--red-bright);font-weight:700;">SẴN SÀNG</span>
-      </div>
-
-      <div class="game-box" id="cgRoot"></div>
-    </div>
-  </section>
-
-  <!-- VIEW 5: SUMMARY CONCLUSION -->
-  <section id="view-summary" class="view-panel">
-    <div class="section-wrap">
-      <div class="section-header">
-        <div>
-          <div class="card-meta" style="margin-bottom:8px;">Nº006 // CONCLUSION</div>
-          <h2 class="section-title">Kết Luận Chủ Đề Nghiên Cứu</h2>
-        </div>
-        <button class="px-btn primary" onclick="switchView('game')">
-          <span>Vào Game Mô Phỏng</span>
-          <span class="arrow-icon">↗</span>
-        </button>
-      </div>
-
+      <!-- Bảng thông số mô hình -->
       <div class="bento-card">
-        <h3 style="font-size:1.4rem;margin-bottom:20px;color:var(--cream);">
-          Giải Pháp Cho Bài Toán Phân Bổ Giá Trị Thặng Dư
-        </h3>
-        <p style="font-size:1.05rem;line-height:1.7;color:var(--cream-dim);margin-bottom:20px;">
-          Dưới áp lực cạnh tranh sinh tử của quy luật giá trị và quy luật giá trị thặng dư, nhà tư bản <strong>bắt buộc phải tư bản hóa giá trị thặng dư</strong> (tái sản xuất mở rộng) để đầu tư công nghệ mới, chứ không thể tiêu xài cá nhân toàn bộ.
-        </p>
-        <div style="font-size:0.95rem;line-height:1.8;color:var(--cream-muted);">
-          <p style="margin-bottom:12px;">• <strong>Nguồn gốc tư bản phụ thêm:</strong> Hoàn toàn sinh ra từ giá trị thặng dư ($m$) do hao phí lao động không công của công nhân tạo ra.</p>
-          <p style="margin-bottom:12px;">• <strong>Đổi mới công nghệ ($c/v$ tăng):</strong> Giúp tạo ra giá trị thặng dư siêu ngạch trong ngắn hạn nhưng tất yếu làm tăng nạn thất nghiệp tương đối dự bị.</p>
-          <p>• <strong>Bản chất quy luật tích lũy:</strong> Một cực tích lũy của cải về tay giai cấp tư sản, cực đối lập tích lũy sự bần cùng và lệ thuộc về phía giai cấp vô sản làm thuê.</p>
+        <div>
+          <div class="card-meta">
+            <span>Nº002 // FORMULA STATS</span>
+            <span>C + V + M</span>
+          </div>
+          <div style="font-size:1.15rem;font-weight:700;margin-bottom:20px;color:var(--cream-dim);">
+            Hệ Thống Tái Sản Xuất
+          </div>
+          <div class="stat-list">
+            <div class="stat-item">
+              <span class="stat-label">Nguồn gốc tích lũy:</span>
+              <span class="stat-value">Giá trị thặng dư (m)</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Tái sản xuất giản đơn:</span>
+              <span class="stat-value" style="color:var(--cream);">Tiêu dùng hết m</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Tái sản xuất mở rộng:</span>
+              <span class="stat-value">Tư bản hóa m (Δc + Δv)</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Cấu tạo hữu cơ (c/v):</span>
+              <span class="stat-value">Tăng không ngừng</span>
+            </div>
+          </div>
         </div>
+        <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);padding-top:20px;border-top:1px solid var(--border);margin-top:24px;">
+          DỰ ÁN NGHIÊN CỨU &amp; TRUYỀN THÔNG HỌC THUẬT // NHÓM 5
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: MODULES KIẾN THỨC -->
+  <section id="theories" class="flow-section scroll-spy-target">
+    <div class="section-header">
+      <div>
+        <div class="card-meta" style="margin-bottom:8px;">Nº003 // CORE CURRICULUM</div>
+        <h2 class="section-title">Hệ Thống Lý Luận Trọng Tâm</h2>
+      </div>
+      <a href="#flipbook" class="px-btn secondary">
+        <span>Xem Trên Flipbook</span>
+        <span class="arrow-icon">↗</span>
+      </a>
+    </div>
+
+    <!-- Dòng chữ lớn sáng dần khi lướt (Scrubbing Manifesto) -->
+    <div style="margin-bottom: 48px; font-size: clamp(1.4rem, 2.8vw, 2.2rem); font-weight: 700; line-height: 1.4;" id="scrubContainer">
+      <span class="scrub-text">Thực chất</span> 
+      <span class="scrub-text">của tích lũy</span> 
+      <span class="scrub-text">tư bản là</span> 
+      <span class="scrub-text">sự chuyển hóa</span> 
+      <span class="scrub-text">một phần</span> 
+      <span class="scrub-text">giá trị thặng dư</span> 
+      <span class="scrub-text">thành tư bản</span> 
+      <span class="scrub-text">phụ thêm,</span> 
+      <span class="scrub-text">nhằm mở rộng</span> 
+      <span class="scrub-text">quy mô sản xuất</span> 
+      <span class="scrub-text">và tăng cường</span> 
+      <span class="scrub-text">bóc lột</span> 
+      <span class="scrub-text">giai cấp vô sản.</span>
+    </div>
+
+    <div class="grid-3">
+      <!-- Module 1 -->
+      <div class="module-card">
+        <div>
+          <span class="module-num">SECTION 01</span>
+          <h3 class="module-heading">Bản chất của tích lũy tư bản</h3>
+          <p class="module-desc">Thực chất của tích lũy tư bản là biến một phần giá trị thặng dư thành tư bản phụ thêm để mở rộng sản xuất[cite: 1].</p>
+          <ul class="module-points">
+            <li>Nguồn gốc duy nhất: Giá trị thặng dư (m)[cite: 1]</li>
+            <li>Tái sản xuất giản đơn vs. Tái sản xuất mở rộng[cite: 1]</li>
+            <li>Tư bản hóa giá trị thặng dư (Δc + Δv)</li>
+          </ul>
+        </div>
+        <a href="#flipbook" class="px-btn secondary">
+          <span>Đọc chi tiết</span>
+          <span class="arrow-icon">↗</span>
+        </a>
+      </div>
+
+      <!-- Module 2 -->
+      <div class="module-card">
+        <div>
+          <span class="module-num">SECTION 02</span>
+          <h3 class="module-heading">Nhân tố ảnh hưởng quy mô</h3>
+          <p class="module-desc">Khi tỷ lệ phân chia tích lũy/tiêu dùng xác định, quy mô tích lũy phụ thuộc khối lượng m qua 4 nhân tố[cite: 1].</p>
+          <ul class="module-points">
+            <li>Trình độ bóc lột sức lao động (m')[cite: 1]</li>
+            <li>Năng suất lao động xã hội[cite: 1]</li>
+            <li>Chênh lệch tư bản sử dụng &amp; tiêu dùng[cite: 1]</li>
+            <li>Quy mô tư bản ứng trước (K)[cite: 1]</li>
+          </ul>
+        </div>
+        <a href="#flipbook" class="px-btn secondary">
+          <span>Đọc chi tiết</span>
+          <span class="arrow-icon">↗</span>
+        </a>
+      </div>
+
+      <!-- Module 3 -->
+      <div class="module-card">
+        <div>
+          <span class="module-num">SECTION 03</span>
+          <h3 class="module-heading">Một số quy luật và hệ quả</h3>
+          <p class="module-desc">Tích lũy thúc đẩy lực lượng sản xuất nhưng phân hóa cực đoan quan hệ sản xuất tư bản chủ nghĩa[cite: 1].</p>
+          <ul class="module-points">
+            <li>Tích tụ tư bản và Tập trung tư bản[cite: 1]</li>
+            <li>Tăng cấu tạo hữu cơ tư bản (c/v)[cite: 1]</li>
+            <li>Bần cùng hóa công nhân &amp; Đội quân thất nghiệp[cite: 1]</li>
+          </ul>
+        </div>
+        <a href="#flipbook" class="px-btn secondary">
+          <span>Đọc chi tiết</span>
+          <span class="arrow-icon">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: HEYZINE FLIPBOOK EMBED -->
+  <section id="flipbook" class="flow-section scroll-spy-target">
+    <div class="action-topbar">
+      <div>
+        <span style="color:var(--cream-muted);">Nº004 // E-BOOK</span>
+        <strong style="margin-left:12px;color:var(--cream);">Sách lật điện tử Heyzine (10 Trang)</strong>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="https://heyzine.com/flip-book/8d1b1fbf46.html" target="_blank" rel="noopener noreferrer" class="px-btn secondary" style="padding:10px 16px;font-size:0.75rem;">
+          <span>Mở Tab Mới</span>
+          <span class="arrow-icon">↗</span>
+        </a>
+        <button onclick="reloadFlipbook()" class="px-btn secondary" style="padding:10px 16px;font-size:0.75rem;">🔄 Tải lại</button>
+        <button onclick="toggleFlipbookFullscreen()" class="px-btn primary" style="padding:10px 16px;font-size:0.75rem;">⛶ Toàn màn hình</button>
+      </div>
+    </div>
+
+    <div class="interactive-frame" id="flipbookWrapper">
+      <iframe 
+        id="flipbookIframe" 
+        src="https://heyzine.com/flip-book/8d1b1fbf46.html" 
+        allowfullscreen="true" 
+        webkitallowfullscreen="true" 
+        mozallowfullscreen="true" 
+        allow="fullscreen; clipboard-write">
+      </iframe>
+    </div>
+  </section>
+
+  <!-- SECTION 4: ARCADE GAME CAPITAL RUSH -->
+  <section id="simulation" class="flow-section scroll-spy-target">
+    <div class="action-topbar">
+      <div>
+        <span style="color:var(--cream-muted);">Nº005 // SIMULATION</span>
+        <strong style="margin-left:12px;color:var(--cream);">Capital Rush — Cuộc Đua Tư Bản</strong>
+      </div>
+      <span id="cgPhaseTag" style="font-family:var(--font-mono);color:var(--red-bright);font-weight:700;">SẴN SÀNG</span>
+    </div>
+
+    <div class="game-box" id="cgRoot"></div>
+  </section>
+
+  <!-- SECTION 5: SUMMARY CONCLUSION -->
+  <section id="conclusion" class="flow-section scroll-spy-target">
+    <div class="section-header">
+      <div>
+        <div class="card-meta" style="margin-bottom:8px;">Nº006 // CONCLUSION</div>
+        <h2 class="section-title">Kết Luận Chủ Đề Nghiên Cứu</h2>
+      </div>
+      <a href="#simulation" class="px-btn primary">
+        <span>Thử Tài Tư Bản</span>
+        <span class="arrow-icon">↗</span>
+      </a>
+    </div>
+
+    <div class="bento-card">
+      <h3 style="font-size:1.4rem;margin-bottom:20px;color:var(--cream);">
+        Giải Pháp Cho Bài Toán Phân Bổ Giá Trị Thặng Dư
+      </h3>
+      <p style="font-size:1.05rem;line-height:1.7;color:var(--cream-dim);margin-bottom:20px;">
+        Dưới áp lực cạnh tranh khốc liệt và quy luật giá trị thặng dư, nhà tư bản <strong>buộc phải tư bản hóa giá trị thặng dư</strong> (tái sản xuất mở rộng) để đầu tư công nghệ mới, chứ không thể dùng toàn bộ cho tiêu dùng xa xỉ cá nhân[cite: 1].
+      </p>
+      <div style="font-size:0.95rem;line-height:1.8;color:var(--cream-muted);">
+        <p style="margin-bottom:12px;">• <strong>Nguồn gốc tư bản phụ thêm:</strong> Hoàn toàn sinh ra từ giá trị thặng dư ($m$) do hao phí sức lao động không công của công nhân tạo ra[cite: 1].</p>
+        <p style="margin-bottom:12px;">• <strong>Đổi mới công nghệ ($c/v$ tăng):</strong> Tăng năng suất lao động xã hội trong ngắn hạn nhưng tất yếu tạo ra đội quân thất nghiệp tương đối dự bị[cite: 1].</p>
+        <p>• <strong>Bản chất quy luật tích lũy:</strong> Một cực tích lũy của cải về tay giai cấp tư sản, cực đối lập tích lũy bần cùng và sự phụ thuộc về phía giai cấp vô sản làm thuê[cite: 1].</p>
       </div>
     </div>
   </section>
@@ -927,81 +968,142 @@
   <!-- FOOTER -->
   <footer class="studio-footer">
     <div class="footer-content">
-      <div>KTCT MÁC - LÊNIN // CHƯƠNG 3: GIÁ TRỊ THẶNG DƯ TRONG KTTT</div>
+      <div>KTCT MÁC - LÊNIN // CHƯƠNG 3: GIÁ TRỊ THẶNG DƯ TRONG KTTT[cite: 1]</div>
       <div style="color:var(--cream-dim);">PX PUSH CONCEPT // KINETIC STUDIO DESIGN</div>
     </div>
   </footer>
 
-  <!-- JAVASCRIPT: CURSOR MOTION, TABS VÀ LOGIC GAME -->
+  <!-- SCRIPT 1: INTERACTIVE CURSOR, TEXT SCRUBBING & SCROLL-SPY -->
   <script>
-    /* ==========================================
-       1. CUSTOM MOUSE CURSOR MOTION (PX PUSH)
-       ========================================== */
+    /* 1. MOUSE CURSOR MOTION */
     const dot = document.getElementById('cursorDot');
     const ring = document.getElementById('cursorRing');
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
     let ringX = mouseX, ringY = mouseY;
 
     window.addEventListener('mousemove', e => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      dot.style.left = mouseX + 'px';
-      dot.style.top = mouseY + 'px';
+      if (dot) {
+        dot.style.left = mouseX + 'px';
+        dot.style.top = mouseY + 'px';
+      }
     });
 
     function renderRing() {
       ringX += (mouseX - ringX) * 0.18;
       ringY += (mouseY - ringY) * 0.18;
-      ring.style.left = ringX + 'px';
-      ring.style.top = ringY + 'px';
+      if (ring) {
+        ring.style.left = ringX + 'px';
+        ring.style.top = ringY + 'px';
+      }
       requestAnimationFrame(renderRing);
     }
     requestAnimationFrame(renderRing);
 
-    function attachHoverEvents() {
-      document.querySelectorAll('button, a, input, .module-card, .bento-card, .quiz-card-btn').forEach(el => {
-        el.addEventListener('mouseenter', () => ring.classList.add('active'));
-        el.addEventListener('mouseleave', () => ring.classList.remove('active'));
+    function attachCursorEvents() {
+      document.querySelectorAll('a, button, input, .module-card, .bento-card, .quiz-card-btn').forEach(el => {
+        el.addEventListener('mouseenter', () => ring && ring.classList.add('active'));
+        el.addEventListener('mouseleave', () => ring && ring.classList.remove('active'));
       });
     }
-    attachHoverEvents();
+    attachCursorEvents();
 
-    /* ==========================================
-       2. VIEW SWITCHER
-       ========================================== */
-    function switchView(tabName) {
-      document.querySelectorAll('.view-panel').forEach(panel => {
-        panel.classList.toggle('active', panel.id === 'view-' + tabName);
-      });
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        const matches = (btn.getAttribute('onclick') || '').includes("'" + tabName + "'");
-        btn.classList.toggle('active', matches);
-        if (matches) {
-          btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    /* 2. TEXT SCRUBBING EFFECT THEO CUỘN (PX PUSH SIGNATURE) */
+    const words = document.querySelectorAll('.scrub-text');
+    const scrubBox = document.getElementById('scrubContainer');
+
+    window.addEventListener('scroll', () => {
+      if (!scrubBox) return;
+      const rect = scrubBox.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      const start = windowHeight * 0.85;
+      const end = windowHeight * 0.25;
+      const progress = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
+      
+      const totalWords = words.length;
+      const activeCount = Math.floor(progress * totalWords);
+
+      words.forEach((w, idx) => {
+        if (idx <= activeCount) {
+          w.classList.add('active');
+        } else {
+          w.classList.remove('active');
         }
       });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(attachHoverEvents, 100);
-    }
+    });
 
+    /* 3. SCROLL-SPY CHO MENU TRÊN THANH DOCK */
+    const spyTargets = document.querySelectorAll('.scroll-spy-target');
+    const navLinks = document.querySelectorAll('.nav-btn');
+
+    window.addEventListener('scroll', () => {
+      let currentId = '';
+      spyTargets.forEach(target => {
+        const top = target.offsetTop - 150;
+        if (window.scrollY >= top) {
+          currentId = target.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        const matches = link.getAttribute('href') === '#' + currentId;
+        link.classList.toggle('active', matches);
+        if (matches && window.innerWidth <= 992) {
+          link.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      });
+    });
+
+    /* 4. FLIPBOOK CONTROLS */
     function reloadFlipbook() {
       const f = document.getElementById('flipbookIframe');
       if (f) f.src = f.src;
     }
 
     function toggleFlipbookFullscreen() {
-      const el = document.getElementById('flipbookWrapper');
-      if (!el) return;
-      if (!document.fullscreenElement) {
-        el.requestFullscreen().catch(err => alert("Không thể mở toàn màn hình: " + err.message));
+      const wrapper = document.getElementById('flipbookWrapper');
+      const iframe = document.getElementById('flipbookIframe');
+      const target = iframe || wrapper;
+      if (!wrapper) return;
+
+      const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+      if (isFs || wrapper.classList.contains('mobile-fullscreen-active')) {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+        if (isFs && exit) {
+          exit.call(document).catch(() => {});
+        }
+        wrapper.classList.remove('mobile-fullscreen-active');
+        const exitBtn = document.getElementById('mobileExitFsBtn');
+        if (exitBtn) exitBtn.remove();
+        return;
+      }
+
+      const req = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen || target.msRequestFullscreen;
+      if (req) {
+        req.call(target).catch(() => {
+          kichHoatFullscreenMobile(wrapper);
+        });
       } else {
-        document.exitFullscreen();
+        kichHoatFullscreenMobile(wrapper);
+      }
+    }
+
+    function kichHoatFullscreenMobile(wrapper) {
+      wrapper.classList.add('mobile-fullscreen-active');
+      if (!document.getElementById('mobileExitFsBtn')) {
+        const btn = document.createElement('button');
+        btn.id = 'mobileExitFsBtn';
+        btn.textContent = '✕ THU NHỎ';
+        btn.setAttribute('style', 'position:fixed; top:12px; right:12px; z-index:10000000; background:rgba(206,41,26,0.95); color:#fff; border:1px solid #fff; padding:8px 14px; font-weight:bold; font-family:var(--font-mono); border-radius:4px; font-size:12px; cursor:pointer;');
+        btn.onclick = toggleFlipbookFullscreen;
+        document.body.appendChild(btn);
       }
     }
   </script>
 
-  <!-- ARCADE GAME LOGIC (GIỮ NGUYÊN 100%) -->
+  <!-- SCRIPT 2: ARCADE GAME CAPITAL RUSH (VỚI FIREBASE & SFX) -->
   <script>
 (function () {
   const TEN_GAME = 'CAPITAL RUSH';
@@ -1010,6 +1112,7 @@
   const THOI_GIAN_PHA2 = 30;
   const DIEM_DUNG = 40 * TRIEU;
   const KHOA_BXH = 'capital_px_bxh';
+  const FIREBASE_URL = 'https://kctcnhom5-default-rtdb.asia-southeast1.firebasedatabase.app/bxh.json';
 
   const CAU_HOI = [
     { tag: 'MỞ ĐẦU',
@@ -1054,12 +1157,21 @@
   const tien = n => Math.round(n).toLocaleString('vi-VN') + ' VNĐ';
   const tag = t => { $('cgPhaseTag').textContent = t; };
 
+  function beep(f, d) {
+    try {
+      const ac = beep.ac || (beep.ac = new (window.AudioContext || window.webkitAudioContext)());
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'square'; o.frequency.value = f; g.gain.value = 0.05;
+      o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + d);
+    } catch (e) {}
+  }
+  const amDung = () => { beep(660, .1); setTimeout(() => beep(880, .15), 110); };
+  const amSai = () => beep(180, .3);
+
   function dungGio() { clearInterval(hen); hen = null; return Math.max(0, (ketThuc - Date.now()) / 1000); }
   function batDauGio(giay, khiHetGio) {
     dungGio(); tongGio = giay; ketThuc = Date.now() + giay * 1000;
     const tick = () => {
-      const v = $('view-game');
-      if (v && !v.classList.contains('active')) { ketThuc += 100; return; }
       const r = Math.max(0, (ketThuc - Date.now()) / 1000);
       const bar = $('cgBar'), t = $('cgTime');
       if (bar) { bar.style.width = (r / tongGio * 100) + '%'; }
@@ -1069,12 +1181,12 @@
     tick(); hen = setInterval(tick, 100);
   }
   const thanhGio = () => `<div><div class="game-progress-bar"><div id="cgBar" class="game-progress-fill" style="width:100%"></div></div><div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim);margin-bottom:16px;">⏱ THỜI GIAN: <strong id="cgTime" style="color:var(--red-bright)">--</strong></div></div>`;
-  const hud = K => `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:var(--bg-surface-hover);border:1px solid var(--border);padding:14px;margin-bottom:20px;font-family:var(--font-mono);font-size:0.82rem;text-align:center;"><div>TỔNG VỐN K<strong style="display:block;color:var(--red-bright);font-size:0.95rem;margin-top:4px;">${tien(K)}</strong></div><div>C = 80%K<strong style="display:block;color:var(--cream);font-size:0.95rem;margin-top:4px;">${tien(K * .8)}</strong></div><div>V = 20%K<strong style="display:block;color:var(--cream);font-size:0.95rem;margin-top:4px;">${tien(K * .2)}</strong></div></div>`;
+  const hud = K => `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:var(--bg-surface-elevated);border:1px solid var(--border);padding:14px;margin-bottom:20px;font-family:var(--font-mono);font-size:0.82rem;text-align:center;"><div>TỔNG VỐN K<strong style="display:block;color:var(--red-bright);font-size:0.95rem;margin-top:4px;">${tien(K)}</strong></div><div>C = 80%K<strong style="display:block;color:var(--cream);font-size:0.95rem;margin-top:4px;">${tien(K * .8)}</strong></div><div>V = 20%K<strong style="display:block;color:var(--cream);font-size:0.95rem;margin-top:4px;">${tien(K * .2)}</strong></div></div>`;
 
   function hien(html) { 
     root().innerHTML = html; 
     khoa = false; 
-    setTimeout(attachHoverEvents, 50);
+    setTimeout(attachCursorEvents, 50);
   }
 
   function manThietLap() {
@@ -1085,8 +1197,8 @@
       <p style="color:var(--cream-muted);font-size:0.95rem;line-height:1.6;">Khởi đầu với <strong>hai bàn tay trắng</strong>, bạn phải dùng kiến thức vượt qua các câu hỏi để kiếm vốn, sau đó ra quyết định đầu tư giá trị thặng dư để cạnh tranh trên thương trường.</p>
       <div class="game-rules">
         <strong>THỂ LỆ CUỘC THI:</strong><br>
-        • <strong>PHA 1 (GỌI VỐN):</strong> 4 thử thách trắc nghiệm lý thuyết (25s/câu) để tích lũy tư bản K ban đầu.<br>
-        • <strong>PHA 2 (ĐẦU TƯ):</strong> Đóng vai nhà tư bản phân bổ giá trị thặng dư m qua 4 tình huống kinh doanh gay cấn (30s/tình huống).
+        • <strong>PHA 1 (GỌI VỐN):</strong> 4 thử thách trắc nghiệm lý thuyết (25s/câu) để tích lũy tư bản K ban đầu[cite: 2].<br>
+        • <strong>PHA 2 (ĐẦU TƯ):</strong> Đóng vai nhà tư bản phân bổ giá trị thặng dư m qua 4 tình huống kinh doanh gay cấn (30s/tình huống)[cite: 2].
       </div>
       <label style="font-family:var(--font-mono);font-size:.85rem;color:var(--cream-dim);">// NHẬP TÊN DOANH NGHIỆP CỦA BẠN:</label>
       <input id="cgTen" class="game-input" maxlength="30" placeholder="VD: Tập đoàn Công nghiệp Alpha" autocomplete="off">
@@ -1143,6 +1255,7 @@
       if (idx === c.d) b.classList.add('correct');
       else if (idx === k) b.classList.add('wrong');
     });
+    dung ? amDung() : amSai();
     const fb = $('cgFb'); fb.classList.add('show');
     fb.innerHTML = `<strong>${dung ? '✅ CHÍNH XÁC!' : (k < 0 ? '⏰ HẾT GIỜ!' : '❌ CHƯA ĐÚNG')}</strong> ${dung ? `+${tien(DIEM_DUNG)}${thuong ? ` & thưởng tốc độ +${tien(thuong)}` : ''}` : 'Bạn không tích lũy được vốn từ câu này.'}
       <p style="margin:10px 0;color:var(--cream-dim)">Đáp án chuẩn: <strong>${'ABCD'[c.d]}</strong>. ${esc(c.giaiThich)}</p>
@@ -1158,12 +1271,12 @@
       <h2 style="font-size:1.6rem;text-transform:uppercase;margin-bottom:8px;">Pha 2: Đầu Tư &amp; Tích Lũy</h2>
       <p style="color:var(--cream-muted);margin-bottom:6px;">Tổng vốn tư bản K thu được của <strong>${esc(S.ten)}</strong>:</p>
       <div class="score-display">${tien(S.K)}</div>
-      <p style="line-height:1.7;color:var(--cream-dim);margin-bottom:20px;">Bạn chuẩn bị đưa số vốn này vào chu kỳ sản xuất để tạo ra giá trị thặng dư m, đồng thời phải đưa ra các quyết định phân bổ sống còn.</p>
+      <p style="line-height:1.7;color:var(--cream-dim);margin-bottom:20px;">Bạn chuẩn bị đưa số vốn này vào chu kỳ sản xuất để tạo ra giá trị thặng dư m, đồng thời phải đưa ra các quyết định phân bổ sống còn[cite: 2].</p>
       <div class="game-rules">
         <strong>QUY ƯỚC ĐIỀU HÀNH:</strong><br>
-        • Tư bản bất biến C = 80%K | Tư bản khả biến V = 20%K<br>
-        • Tỷ suất giá trị thặng dư ban đầu m' = 100% ⇒ m = V<br>
-        • Mỗi tình huống có 30 giây để ra quyết định.
+        • Tư bản bất biến C = 80%K | Tư bản khả biến V = 20%K[cite: 2]<br>
+        • Tỷ suất giá trị thặng dư ban đầu m' = 100% ⇒ m = V[cite: 2]<br>
+        • Mỗi tình huống có 30 giây để ra quyết định[cite: 2].
       </div>
       <button class="px-btn primary" data-act="th" data-n="1">
         <span>Vào Tình Huống 1</span>
@@ -1194,6 +1307,7 @@
     if (khoa) return; khoa = true; dungGio();
     const v = raw === null || raw.trim() === '' ? NaN : parseFloat(raw.replace(/[.\s]/g, '').replace(',', '.'));
     const dung = Math.abs(v - S.m) < 1;
+    dung ? amDung() : amSai();
     S.nhatKy.push(`TH1: ${dung ? 'đúng' : 'sai/bỏ trống'} (m = ${tien(S.m)})`);
     const inp = $('cgM'); if (inp) inp.disabled = true;
     const fb = $('cgFb'); fb.classList.add('show');
@@ -1225,6 +1339,7 @@
     if (khoa) return; khoa = true; dungGio();
     const he = [0, 0.5, 1][k];
     S.K = S.K + he * S.m; S.Kp = S.K; S.c2 = k;
+    amDung();
     document.querySelectorAll('.quiz-card-btn').forEach((b, i) => { b.disabled = true; if (i === k) b.classList.add('correct'); });
     const fb = $('cgFb'); fb.classList.add('show');
     fb.innerHTML = `<strong>Tư bản sau chu kỳ:</strong> K' = <strong>${tien(S.K)}</strong>
@@ -1254,6 +1369,7 @@
     if (khoa) return; khoa = true; dungGio();
     S.c3 = k; const thuong = k === 1 ? 0.15 * S.m2 : 0;
     S.K = S.K + S.m2 + thuong; S.K2 = S.K;
+    k === 1 ? amDung() : amSai();
     document.querySelectorAll('.quiz-card-btn').forEach((b, i) => { b.disabled = true; if (i === k) b.classList.add('correct'); });
     const fb = $('cgFb'); fb.classList.add('show');
     fb.innerHTML = k === 0 
@@ -1287,6 +1403,7 @@
     if (k < 0) { he = 0.6; lyDo = 'Không kịp ra quyết định, bạn bị tổn thất 40% vốn.'; }
     else [he, lyDo] = BANG4['ABC'[k]]['AB'[S.c3]];
     S.K = S.K2 * he;
+    he >= 1 ? amDung() : amSai();
     document.querySelectorAll('.quiz-card-btn').forEach((b, i) => { b.disabled = true; if (i === k) b.classList.add(he >= 1 ? 'correct' : 'wrong'); });
     const fb = $('cgFb'); fb.classList.add('show');
     fb.innerHTML = `<strong>Tư bản chung cuộc: ${tien(S.K)}</strong><p style="margin:8px 0;color:var(--cream-dim);">${esc(lyDo)}</p>
@@ -1296,30 +1413,86 @@
       </button>`;
   }
 
-  function docBXH() { try { return JSON.parse(localStorage.getItem(KHOA_BXH)) || []; } catch (e) { return []; } }
-  function ghiBXH(ds) { try { localStorage.setItem(KHOA_BXH, JSON.stringify(ds)); } catch (e) {} }
+  /* === CLOUD FIREBASE REALTIME === */
+  function docBXHLocal() { try { return JSON.parse(localStorage.getItem(KHOA_BXH)) || []; } catch (e) { return []; } }
 
-  function manKetThuc() {
+  async function docBXH() {
+    try {
+      const res = await fetch(FIREBASE_URL);
+      const data = await res.json();
+      if (!data) return docBXHLocal();
+      return Object.keys(data).map(key => data[key]);
+    } catch (e) {
+      return docBXHLocal();
+    }
+  }
+
+  async function ghiBXH(nguoiChoi) {
+    try {
+      await fetch(FIREBASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nguoiChoi)
+      });
+    } catch (e) {
+      try {
+        const ds = docBXHLocal();
+        ds.push(nguoiChoi);
+        localStorage.setItem(KHOA_BXH, JSON.stringify(ds));
+      } catch (err) {}
+    }
+  }
+
+  async function manKetThuc() {
     tag('TỔNG KẾT'); dungGio();
     const id = Date.now();
-    const ds = docBXH(); ds.push({ id, ten: S.ten, K: S.K }); ds.sort((a, b) => b.K - a.K);
-    const top = ds.slice(0, 10); ghiBXH(ds.slice(0, 50));
-    const hang = ds.findIndex(x => x.id === id) + 1;
     const nhan = S.K >= 600 * TRIEU ? '🦈 ĐẠI TƯ BẢN — THÂU TÓM TOÀN NGÀNH' : S.K >= 300 * TRIEU ? '🐟 TƯ BẢN CỠ VỪA — TRỤ VỮNG THÀNH CÔNG' : '🐠 DOANH NGHIỆP YẾU THẾ — NGUY CƠ PHÁ SẢN';
+    
     hien(`<div class="game-center">
       <h2 style="font-size:1.8rem;text-transform:uppercase;margin-bottom:8px;">Hồi Kết Cuộc Đua</h2>
       <p style="color:var(--cream-muted);">Doanh nghiệp <strong>${esc(S.ten)}</strong> hoàn tất cuộc hành trình với:</p>
       <div class="score-display">${tien(S.K)}</div>
-      <p style="font-weight:700;color:var(--cream-dim);margin-bottom:16px;">${nhan} • Xếp hạng: #${hang}</p>
-      <table class="leaderboard-tbl">
-        <tr><th>HẠNG</th><th>DOANH NGHIỆP</th><th>TỔNG TƯ BẢN K</th></tr>
-        ${top.map((x, i) => `<tr class="${x.id === id ? 'highlight-me' : ''}"><td>#${i + 1}</td><td>${esc(x.ten)}</td><td>${tien(x.K)}</td></tr>`).join('')}
-      </table>
+      <p style="font-weight:700;color:var(--cream-dim);margin-bottom:16px;">${nhan}</p>
+      <div id="bxhLoading" style="font-family:var(--font-mono);color:var(--cream-dim);margin:20px 0;">
+        ⏳ Đang đồng bộ bảng xếp hạng toàn server...
+      </div>
+      <div id="bxhContainer" style="width:100%;"></div>
       <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;justify-content:center;">
         <button class="px-btn primary" data-act="lai">Chơi Lại Ván Mới</button>
-        <button class="px-btn secondary" onclick="switchView('summary')">Đọc Kết Luận Bài Học</button>
+        <a href="#conclusion" class="px-btn secondary">Đọc Kết Luận Bài Học</a>
       </div>
     </div>`);
+
+    beep(784, .2);
+    setTimeout(() => beep(988, .3), 220);
+
+    await ghiBXH({ id, ten: S.ten, K: S.K, time: new Date().toISOString() });
+    const ds = await docBXH();
+    ds.sort((a, b) => b.K - a.K);
+    const top = ds.slice(0, 10);
+    const hang = ds.findIndex(x => x.id === id) + 1;
+
+    const loading = $('bxhLoading');
+    if (loading) loading.remove();
+
+    const container = $('bxhContainer');
+    if (container) {
+      container.innerHTML = `
+        <p style="margin-bottom:12px;font-family:var(--font-mono);color:var(--red-bright);font-weight:bold;">
+          Vị trí của bạn: Hạng #${hang > 0 ? hang : 'N/A'} trên toàn hệ thống
+        </p>
+        <table class="leaderboard-tbl">
+          <tr><th>HẠNG</th><th>DOANH NGHIỆP</th><th>TỔNG TƯ BẢN K</th></tr>
+          ${top.map((x, i) => `
+            <tr class="${x.id === id ? 'highlight-me' : ''}">
+              <td>#${i + 1}</td>
+              <td>${esc(x.ten)}</td>
+              <td>${tien(x.K)}</td>
+            </tr>
+          `).join('')}
+        </table>
+      `;
+    }
   }
 
   function khoiTao() {
