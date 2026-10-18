@@ -1,297 +1,685 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CAPITAL_OS // Chương 3: Tích Lũy Tư Bản — KTCT Mác-Lênin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPITAL_OS — TÍCH LŨY TƯ BẢN &amp; BÀI TOÁN GIÁ TRỊ THẶNG DƯ</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
   <style>
     :root {
+      --bg-noir: #181513;
+      --bg-panel: #221C18;
+      --bg-card: #2C241F;
+      --bg-card-hover: #382C24;
       --red-primary: #CE291A;
-      --red-deep: #941A0F;
       --red-bright: #F7523F;
-      --cream: #E6CAA7;
-      --cream-soft: #F4E3CE;
-      --cream-muted: #B89F82;
-      --bg-window: #28211B;
-      --bg-desktop: #1B1612;
-      --bg-panel: #332A22;
-      --border-warm: #453830;
-      --shadow-hard: 6px 6px 0px #120E0B;
-      --shadow-sm: 3px 3px 0px #120E0B;
-      --font-main: 'Montserrat', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --red-dark: #8C1A10;
+      --cream: #FAF4EC;
+      --cream-soft: #E6CAA7;
+      --cream-muted: #B89B79;
+      --border-dark: #3D3128;
+      --border-bright: #CE291A;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --scanline-opacity: 0.15;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-    body {
-      background-color: var(--bg-desktop);
-      background-image: radial-gradient(var(--border-warm) 1px, transparent 1px), linear-gradient(135deg, rgba(148, 26, 15, 0.14) 0%, rgba(40, 33, 27, 0.95) 100%);
-      background-size: 24px 24px, 100% 100%;
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background-color: var(--bg-noir);
       color: var(--cream);
-      font-family: var(--font-main);
+      font-family: var(--font-body);
       min-height: 100vh;
+      line-height: 1.5;
       overflow-x: hidden;
+    }
+
+    /* CRT EFFECT */
+    body.crt-enabled::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      z-index: 9999;
+      background-size: 100% 3px, 6px 100%;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    /* OS TOPBAR */
+    .os-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: #14110F;
+      border-bottom: 2px solid var(--border-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      height: 48px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+    .os-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--cream);
+      font-weight: 700;
+    }
+    .os-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red-primary);
+      box-shadow: 0 0 8px var(--red-bright);
+    }
+    .os-nav-tabs {
+      display: flex;
+      gap: 8px;
+    }
+    .os-nav-btn {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dark);
+      color: var(--cream-muted);
+      padding: 6px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+    }
+    .os-nav-btn:hover {
+      background: var(--bg-card);
+      color: var(--cream);
+      border-color: var(--cream-soft);
+    }
+    .os-nav-btn.active {
+      background: var(--red-primary);
+      color: #fff;
+      border-color: var(--red-bright);
+      box-shadow: 0 2px 8px rgba(206, 41, 26, 0.4);
+    }
+    .os-status-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--cream-muted);
+    }
+
+    /* MAIN DESKTOP VIEWPORT */
+    .os-desktop {
+      max-width: 1280px;
+      margin: 20px auto;
+      padding: 0 16px 40px;
+    }
+    .view-section {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+    .view-section.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* OS WINDOW FRAME */
+    .os-window {
+      background: var(--bg-panel);
+      border: 2px solid var(--border-dark);
+      border-radius: 6px;
+      box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.6);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .os-window-header {
+      background: #191411;
+      border-bottom: 2px solid var(--border-dark);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+    .window-title {
+      color: var(--cream);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .window-tag {
+      background: rgba(206, 41, 26, 0.2);
+      border: 1px solid var(--red-primary);
+      color: var(--red-bright);
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+    .os-window-body {
+      padding: 28px 24px;
+    }
+
+    /* HERO CONTENT */
+    .hero-heading {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+    }
+    .hero-heading span.accent {
+      color: var(--red-primary);
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+    .pov-box {
+      background: #14110F;
+      border: 1px solid var(--border-dark);
+      border-left: 5px solid var(--red-primary);
+      padding: 20px;
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 24px;
+    }
+    .pov-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--red-bright);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .pov-text {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--cream-soft);
+      line-height: 1.6;
+    }
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .retro-btn {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      box-shadow: 3px 3px 0px #000;
+    }
+    .retro-btn:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px #000;
+    }
+    .retro-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0px #000;
+    }
+    .retro-btn.primary {
+      background: var(--red-primary);
+      color: #fff;
+      border-color: var(--red-bright);
+    }
+    .retro-btn.secondary {
+      background: var(--cream-soft);
+      color: #14110F;
+      border-color: #fff;
+    }
+    .retro-btn.ghost {
+      background: var(--bg-card);
+      color: var(--cream);
+      border-color: var(--border-dark);
+    }
+    .retro-btn.sm {
+      padding: 8px 14px;
+      font-size: 0.76rem;
+    }
+
+    /* MODULE CARDS GRID */
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 14px;
+    }
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dark);
+      border-radius: 6px;
+      padding: 22px 18px;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.2s;
+    }
+    .module-card:hover {
+      border-color: var(--red-primary);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+    }
+    .card-num {
+      background: #14110F;
+      border: 1px solid var(--border-dark);
+      color: var(--red-bright);
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 10px;
+    }
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--cream-muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .card-bullets {
+      list-style: none;
+      font-size: 0.84rem;
+      color: var(--cream-soft);
+      border-top: 1px solid var(--border-dark);
+      padding-top: 12px;
+      margin-bottom: 18px;
+    }
+    .card-bullets li {
+      padding: 4px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .card-bullets li span.bullet {
+      color: var(--red-primary);
+      font-weight: 700;
+    }
+
+    /* FLIPBOOK VIEWPORT */
+    .flipbook-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+    .flipbook-container {
+      background: #000;
+      border: 1px solid var(--border-dark);
+      border-radius: 6px;
+      overflow: hidden;
+      height: 76vh;
+      min-height: 560px;
+      width: 100%;
       position: relative;
     }
-    body.crt-enabled::after {
-      content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-      z-index: 9999; background-size: 100% 3px, 6px 100%; pointer-events: none;
+    .flipbook-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
-    .os-topbar {
-      height: 44px; background: var(--bg-window); border-bottom: 2px solid var(--border-warm);
-      display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
-      position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 0 rgba(0,0,0,0.4);
-      font-family: var(--font-mono); font-size: 0.82rem;
-    }
-    .os-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--cream); letter-spacing: 0.5px; }
-    .os-logo-badge { background: var(--red-primary); color: var(--cream); padding: 3px 8px; border: 2px solid var(--cream); font-weight: 800; font-size: 0.75rem; box-shadow: 2px 2px 0 #000; }
-    .os-nav-tabs { display: flex; gap: 6px; }
-    .os-nav-btn { background: transparent; color: var(--cream-muted); border: 1px solid transparent; padding: 5px 12px; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.15s ease; border-radius: 3px; }
-    .os-nav-btn:hover, .os-nav-btn.active { background: var(--red-primary); color: var(--cream); border-color: var(--cream); box-shadow: 2px 2px 0 #000; }
-    .os-status-right { display: flex; align-items: center; gap: 10px; }
-    .os-toggle-chip { background: var(--bg-panel); border: 1px solid var(--border-warm); color: var(--cream); padding: 4px 10px; font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-    .os-toggle-chip.active { border-color: var(--red-bright); color: var(--red-bright); }
-    .os-clock { background: var(--red-deep); color: var(--cream); padding: 4px 10px; border: 1px solid var(--border-warm); font-weight: 700; }
-    .os-desktop { flex: 1; max-width: 1360px; width: 100%; margin: 0 auto; padding: 24px 20px 90px; display: flex; flex-direction: column; gap: 24px; }
-    .view-section { display: none; animation: bootWindow 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-    .view-section.active { display: block; }
-    @keyframes bootWindow { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    .os-window { background: var(--bg-window); border: 2px solid var(--border-warm); box-shadow: var(--shadow-hard); margin-bottom: 24px; overflow: hidden; }
-    .os-window-header { background: linear-gradient(90deg, var(--red-deep) 0%, var(--red-primary) 100%); border-bottom: 2px solid var(--border-warm); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
-    .window-title { font-family: var(--font-mono); font-size: 0.83rem; font-weight: 700; color: var(--cream); letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
-    .window-tag { font-family: var(--font-mono); font-size: 0.72rem; background: var(--bg-window); color: var(--cream); padding: 2px 8px; border: 1px solid var(--cream); }
-    .os-window-body { padding: 24px; user-select: text; }
-    .hero-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 24px; }
-    .chapter-pill { display: inline-flex; align-items: center; gap: 8px; background: var(--red-deep); border: 1px solid var(--red-bright); color: var(--cream); font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; padding: 5px 12px; margin-bottom: 14px; }
-    .hero-title { font-size: 2.1rem; font-weight: 900; line-height: 1.2; color: var(--cream); margin-bottom: 14px; text-transform: uppercase; }
-    .hero-title span { color: var(--red-bright); text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 5px; }
-    .pov-question-box { background: var(--bg-panel); border-left: 5px solid var(--red-primary); border-top: 1px solid var(--border-warm); border-right: 1px solid var(--border-warm); border-bottom: 1px solid var(--border-warm); padding: 18px 20px; margin: 18px 0 22px; position: relative; }
-    .pov-label { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 800; color: var(--red-bright); text-transform: uppercase; margin-bottom: 6px; display: block; }
-    .pov-text { font-size: 1.05rem; font-weight: 700; line-height: 1.55; color: var(--cream); }
-    .cta-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 20px; }
-    .retro-btn { font-family: var(--font-main); font-weight: 800; font-size: 0.92rem; padding: 13px 22px; border: 2px solid var(--cream); cursor: pointer; display: inline-flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: var(--shadow-sm); transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease; text-decoration: none; }
-    .retro-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
-    .retro-btn.primary { background: var(--red-primary); color: var(--cream); }
-    .retro-btn.primary:hover { background: var(--red-bright); }
-    .retro-btn.secondary { background: var(--cream); color: var(--bg-window); border-color: var(--bg-window); }
-    .retro-btn.secondary:hover { background: var(--cream-soft); }
-    .retro-btn.ghost { background: var(--bg-panel); color: var(--cream); border-color: var(--border-warm); }
-    .retro-btn.ghost:hover { border-color: var(--red-bright); color: var(--red-bright); }
-    .retro-btn.sm { padding: 6px 12px; font-size: 0.78rem; font-family: var(--font-mono); }
-    .capitalist-terminal { background: #1E1813; border: 2px solid var(--border-warm); padding: 18px; display: flex; flex-direction: column; justify-content: space-between; height: 100%; font-family: var(--font-mono); }
-    .avatar-box { display: flex; align-items: center; gap: 14px; border-bottom: 1px dashed var(--border-warm); padding-bottom: 14px; margin-bottom: 14px; }
-    .pixel-avatar { width: 64px; height: 64px; background: var(--red-deep); border: 2px solid var(--cream); display: grid; place-items: center; font-size: 2rem; box-shadow: 3px 3px 0 #000; }
-    .stat-list { display: flex; flex-direction: column; gap: 10px; font-size: 0.82rem; }
-    .stat-item { display: flex; justify-content: space-between; padding: 6px 10px; background: var(--bg-window); border: 1px solid var(--border-warm); }
-    .stat-item strong { color: var(--red-bright); }
-    .formula-banner { margin-top: 14px; background: var(--red-deep); border: 1px solid var(--red-bright); padding: 10px; text-align: center; font-weight: 700; font-size: 0.85rem; color: var(--cream); }
-    .module-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .module-card { background: var(--bg-panel); border: 2px solid var(--border-warm); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm); transition: transform 0.15s ease, border-color 0.15s ease; }
-    .module-card:hover { transform: translateY(-3px); border-color: var(--red-bright); }
-    .module-num { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 800; color: var(--cream); background: var(--red-primary); display: inline-block; padding: 3px 9px; margin-bottom: 12px; border: 1px solid var(--cream); }
-    .module-card h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 10px; color: var(--cream); }
-    .module-card p { font-size: 0.9rem; line-height: 1.55; color: var(--cream-muted); margin-bottom: 16px; }
-    .module-points { list-style: none; margin-bottom: 16px; font-size: 0.86rem; }
-    .module-points li { padding: 5px 0; border-bottom: 1px dashed var(--border-warm); display: flex; align-items: center; gap: 8px; }
-    .module-points li::before { content: "▸"; color: var(--red-bright); font-weight: bold; }
-    .meter-track { width: 100%; height: 16px; background: var(--bg-window); border: 1px solid var(--border-warm); overflow: hidden; }
-    .meter-fill { height: 100%; background: var(--red-primary); transition: width 0.3s ease; }
-    .meter-fill.cream { background: var(--cream); }
-    .meter-fill.bright { background: var(--red-bright); }
-    .quiz-header-bar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border: 2px solid var(--border-warm); padding: 12px 18px; margin-bottom: 18px; font-family: var(--font-mono); }
-    .quiz-question-card { background: var(--bg-panel); border: 2px solid var(--border-warm); padding: 24px; margin-bottom: 18px; }
-    .quiz-q-tag { display: inline-block; background: var(--red-deep); color: var(--cream); border: 1px solid var(--red-bright); font-family: var(--font-mono); font-size: 0.76rem; padding: 3px 10px; margin-bottom: 12px; }
-    .quiz-q-text { font-size: 1.15rem; font-weight: 800; line-height: 1.5; margin-bottom: 20px; color: var(--cream); }
-    .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .quiz-opt-btn { background: var(--bg-window); border: 2px solid var(--border-warm); color: var(--cream); padding: 14px 16px; text-align: left; font-family: var(--font-main); font-size: 0.92rem; font-weight: 600; line-height: 1.45; cursor: pointer; transition: all 0.15s ease; display: flex; align-items: flex-start; gap: 10px; }
-    .quiz-opt-btn:hover:not(:disabled) { border-color: var(--red-bright); background: rgba(247, 82, 63, 0.12); }
-    .quiz-opt-btn.correct { background: rgba(46, 160, 67, 0.25); border-color: #4ade80; color: #e6ffed; }
-    .quiz-opt-btn.wrong { background: rgba(206, 41, 26, 0.35); border-color: var(--red-bright); color: var(--cream); }
-    .opt-letter { font-family: var(--font-mono); font-weight: 800; background: var(--red-deep); color: var(--cream); padding: 2px 8px; border: 1px solid var(--cream); flex-shrink: 0; }
-    .quiz-feedback { margin-top: 18px; padding: 16px; background: var(--bg-window); border-left: 4px solid var(--red-bright); display: none; }
-    .quiz-feedback.show { display: block; }
-    .retro-input { width: 100%; max-width: 420px; background: #181310; border: 2px solid var(--border-warm); color: var(--cream); padding: 12px 14px; font-family: var(--font-mono); font-size: 0.95rem; margin: 12px 0 18px; outline: none; }
-    .retro-input:focus { border-color: var(--red-bright); }
-    .cg-center { text-align: center; max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
-    .cg-quote { font-style: italic; color: var(--cream-soft); background: var(--bg-panel); border-left: 4px solid var(--red-bright); padding: 10px 16px; margin: 14px 0; font-size: 0.92rem; }
-    .cg-rules { background: #1B1511; border: 1px dashed var(--border-warm); padding: 14px; font-size: 0.85rem; text-align: left; margin: 16px 0; width: 100%; line-height: 1.6; }
-    .cg-timer { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-family: var(--font-mono); }
-    .cg-hud { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: var(--bg-panel); border: 2px solid var(--border-warm); padding: 10px 14px; margin-bottom: 16px; font-family: var(--font-mono); font-size: 0.78rem; text-align: center; }
-    .cg-hud strong { display: block; font-size: 0.92rem; color: var(--red-bright); margin-top: 4px; }
-    .cg-big { font-size: 2.2rem; font-weight: 900; color: var(--red-bright); font-family: var(--font-mono); margin: 12px 0; }
-    .cg-warn { background: rgba(206, 41, 26, 0.2); border: 1px solid var(--red-bright); padding: 10px; margin: 10px 0; font-size: 0.88rem; text-align: left; }
-    .cg-good { background: rgba(74, 222, 128, 0.15); border: 1px solid #4ade80; padding: 10px; margin: 10px 0; font-size: 0.88rem; text-align: left; }
-    
-    /* Bảng BXH chuẩn, cố định cột không bị tràn chữ */
-    .cg-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-family: var(--font-mono); font-size: 0.84rem; table-layout: fixed; }
-    .cg-table th, .cg-table td { padding: 8px 10px; border: 1px solid var(--border-warm); }
-    .cg-table th { background: var(--bg-panel); color: var(--red-bright); }
-    .cg-table tr.me { background: rgba(206, 41, 26, 0.25); font-weight: bold; }
-    .cg-table th:nth-child(1), .cg-table td:nth-child(1) { width: 20%; text-align: center; }
-    .cg-table th:nth-child(2), .cg-table td:nth-child(2) { width: 45%; word-break: break-word; text-align: left; }
-    .cg-table th:nth-child(3), .cg-table td:nth-child(3) { width: 35%; text-align: right; }
-
-    .flipbook-container { position: relative; width: 100%; height: 75vh; min-height: 580px; background: #000; border: 2px solid var(--border-warm); box-shadow: var(--shadow-sm); overflow: hidden; }
-    .flipbook-iframe { width: 100%; height: 100%; border: none; display: block; }
-    .flipbook-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: var(--bg-panel); border: 2px solid var(--border-warm); padding: 10px 16px; margin-bottom: 14px; font-family: var(--font-mono); font-size: 0.82rem; }
-    
-    /* Fullscreen CSS cho điện thoại */
     .flipbook-container.mobile-fullscreen-active {
       position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      z-index: 999999 !important;
+      top: 0 !important; left: 0 !important;
+      width: 100vw !important; height: 100vh !important;
+      z-index: 9999999 !important;
       margin: 0 !important;
       border: none !important;
       border-radius: 0 !important;
     }
 
-    /* Giao diện Mobile tối ưu: Menu vuốt ngang trượt tự động ra giữa */
+    /* ARCADE GAME STYLES */
+    .cg-center {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .cg-rules {
+      background: #14110F;
+      border: 1px solid var(--border-dark);
+      padding: 18px;
+      text-align: left;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .retro-input {
+      width: 100%;
+      max-width: 420px;
+      background: #14110F;
+      border: 1px solid var(--border-dark);
+      color: var(--cream);
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      border-radius: 4px;
+      outline: none;
+      margin: 14px auto 20px;
+      display: block;
+    }
+    .retro-input:focus {
+      border-color: var(--red-primary);
+    }
+    .cg-timer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      margin-bottom: 16px;
+    }
+    .meter-track {
+      flex: 1;
+      height: 10px;
+      background: #14110F;
+      border: 1px solid var(--border-dark);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .meter-fill {
+      height: 100%;
+      background: var(--red-primary);
+      transition: width 0.15s linear;
+    }
+    .meter-fill.bright {
+      background: var(--red-bright);
+    }
+    .cg-hud {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      background: #14110F;
+      border: 1px solid var(--border-dark);
+      padding: 12px;
+      margin-bottom: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      text-align: center;
+      border-radius: 4px;
+    }
+    .cg-hud strong {
+      display: block;
+      color: var(--red-bright);
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 20px 0;
+      text-align: left;
+    }
+    .quiz-opt-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dark);
+      color: var(--cream);
+      padding: 14px 16px;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+    .quiz-opt-btn:hover:not(:disabled) {
+      border-color: var(--red-bright);
+      background: var(--bg-card-hover);
+    }
+    .quiz-opt-btn.correct {
+      border-color: #4ade80;
+      background: rgba(74, 222, 128, 0.15);
+      color: #e6ffed;
+    }
+    .quiz-opt-btn.wrong {
+      border-color: var(--red-bright);
+      background: rgba(206, 41, 26, 0.25);
+    }
+    .opt-letter {
+      font-family: var(--font-mono);
+      color: var(--red-bright);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .quiz-feedback {
+      background: #14110F;
+      border-left: 4px solid var(--red-primary);
+      padding: 16px;
+      margin-top: 20px;
+      text-align: left;
+      display: none;
+    }
+    .quiz-feedback.show { display: block; }
+    .cg-big {
+      font-size: 2.8rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--red-bright);
+      margin: 14px 0;
+    }
+    .cg-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+    .cg-table th, .cg-table td {
+      padding: 10px 14px;
+      border: 1px solid var(--border-dark);
+      text-align: left;
+    }
+    .cg-table th {
+      background: #14110F;
+      color: var(--red-bright);
+    }
+    .cg-table tr.me {
+      background: rgba(206, 41, 26, 0.25);
+      font-weight: 700;
+    }
+
+    /* FOOTER */
+    .os-footer {
+      border-top: 2px solid var(--border-dark);
+      background: #14110F;
+      padding: 20px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--cream-muted);
+    }
+
+    /* MOBILE RESPONSIVE TWEAKS */
     @media (max-width: 980px) {
-      .hero-grid, .module-grid, .quiz-options, .cg-hud { grid-template-columns: 1fr; }
+      .module-grid, .quiz-options, .cg-hud { grid-template-columns: 1fr; }
       .flipbook-container { height: 60vh; min-height: 420px; }
-      
       .os-topbar {
-        height: auto !important;
-        padding: 8px 6px !important;
-        flex-direction: column !important;
-        gap: 6px !important;
+        height: auto;
+        padding: 8px 12px;
+        flex-direction: column;
+        gap: 8px;
       }
-      .os-brand, .os-status-right {
-        display: none !important;
-      }
+      .os-brand, .os-status-right { display: none; }
       .os-nav-tabs {
-        display: flex !important;
-        width: 100% !important;
-        overflow-x: auto !important;
-        white-space: nowrap !important;
-        gap: 6px !important;
-        padding: 2px 14px !important; /* Tạo lề để hé lộ các tab cạnh */
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        gap: 6px;
         scrollbar-width: none;
       }
       .os-nav-tabs::-webkit-scrollbar { display: none; }
       .os-nav-btn {
-        flex-shrink: 0 !important;
-        font-size: 0.74rem !important;
-        padding: 7px 12px !important;
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        padding: 8px 12px;
       }
-
-      .cg-table th:nth-child(1), .cg-table td:nth-child(1) { width: 22% !important; }
-      .cg-table th:nth-child(2), .cg-table td:nth-child(2) { width: 43% !important; }
-      .cg-table th:nth-child(3), .cg-table td:nth-child(3) { width: 35% !important; }
+      .cg-table {
+        table-layout: fixed;
+        width: 100%;
+      }
+      .cg-table th:nth-child(1), .cg-table td:nth-child(1) { width: 22%; text-align: center; }
+      .cg-table th:nth-child(2), .cg-table td:nth-child(2) { width: 43%; word-break: break-word; text-align: left; }
+      .cg-table th:nth-child(3), .cg-table td:nth-child(3) { width: 35%; text-align: right; }
     }
   </style>
 </head>
 <body class="crt-enabled">
+
+  <!-- TOP MENU (ĐÃ LOẠI BỎ MỤC [04] KẾT LUẬN) -->
   <header class="os-topbar">
     <div class="os-brand">
-      <span class="os-logo-badge">NHÓM 5 // OS</span>
-      <span>CAPITAL_OS v3.2 — KINH TẾ CHÍNH TRỊ MÁC-LÊNIN</span>
+      <div class="os-dot"></div>
+      <span>CAPITAL_OS // CHƯƠNG 3</span>
     </div>
-    <nav class="os-nav-tabs" id="mainNavTabs">
-      <button class="os-nav-btn active" onclick="switchView('home', this)">[01] DESKTOP_HOME</button>
-      <button class="os-nav-btn" onclick="switchView('flipbook', this)">[02] FLIPBOOK.EXE</button>
-      <button class="os-nav-btn" onclick="switchView('game', this)">[03] ARCADE_GAME.EXE</button>
-      <button class="os-nav-btn" onclick="switchView('summary', this)">[04] KẾT_LUẬN.DOC</button>
+    <nav class="os-nav-tabs" id="osNav">
+      <button class="os-nav-btn active" onclick="switchView('home')">[01] DESKTOP_HOME</button>
+      <button class="os-nav-btn" onclick="switchView('flipbook')">[02] FLIPBOOK.EXE</button>
+      <button class="os-nav-btn" onclick="switchView('game')">[03] ARCADE_GAME.EXE</button>
     </nav>
     <div class="os-status-right">
-      <button id="crtToggleBtn" class="os-toggle-chip active" onclick="toggleCRT()"><span>📺 CRT: ON</span></button>
-      <button id="soundToggleBtn" class="os-toggle-chip active" onclick="toggleSound()"><span>🔊 SFX: ON</span></button>
-      <div id="osClock" class="os-clock">00:00:00</div>
+      <button class="os-nav-btn" id="crtToggleBtn" onclick="toggleCRT()">📺 CRT: ON</button>
+      <button class="os-nav-btn" id="soundToggleBtn" onclick="toggleSound()">🔊 SFX: ON</button>
+      <span id="osClock" style="font-weight: bold; color: var(--cream-soft);">00:00:00</span>
     </div>
   </header>
+
+  <!-- DESKTOP CONTAINER -->
   <main class="os-desktop">
+
+    <!-- VIEW 1: HOME DESKTOP -->
     <section id="view-home" class="view-section active">
       <div class="os-window">
         <div class="os-window-header">
-          <div class="window-title"><span>POV: NHÀ TƯ BẢN // TÁI ĐẦU TƯ GTTD</span></div>
-          <span class="window-tag">CHƯƠNG 3 • MỤC II</span>
+          <div class="window-title">
+            <span>POV: NHÀ TƯ BẢN &amp; THẶNG DƯ</span>
+          </div>
+          <span class="window-tag">CHỦ ĐỀ NGHIÊN CỨU TRỌNG TÂM</span>
         </div>
         <div class="os-window-body">
-          <div class="hero-grid">
-            <div>
-              <div class="chapter-pill"><span>★ CHƯƠNG 3: GIÁ TRỊ THẶNG DƯ TRONG NỀN KINH TẾ THỊ TRƯỜNG</span></div>
-              <h1 class="hero-title">II. TÍCH LŨY TƯ BẢN &amp; <span>QUYẾT SÁCH TÁI ĐẦU TƯ</span></h1>
-              <div class="pov-question-box">
-                <span class="pov-label">// CHỦ ĐỀ CHÍNH (ROLEPLAY PROMPT):</span>
-                <p class="pov-text">“Anh/Chị là một nhà tư bản, sau khi thực hiện hành vi <strong>‘bóc lột’</strong> giai cấp công nhân thì anh/chị sẽ sử dụng <strong>giá trị thặng dư (M)</strong> đó như thế nào?”</p>
-              </div>
-              <p style="font-size: 0.94rem; line-height: 1.6; color: var(--cream-soft);">
-                Khám phá toàn bộ dòng chảy từ <strong>Bản chất của tích lũy tư bản</strong>, <strong>4 Nhân tố ảnh hưởng đến quy mô tích lũy</strong> cho đến <strong>5 Hệ quả tất yếu</strong> đối với giai cấp công nhân thông qua Flipbook tương tác và Trò chơi mô phỏng.
-              </p>
-              <div class="cta-row">
-                <button class="retro-btn primary" onclick="switchView('flipbook')">📖 MỞ FLIPBOOK LÝ THUYẾT (10 TRANG)</button>
-                <button class="retro-btn secondary" onclick="switchView('game')">🎮 CHƠI GAME ÔN TẬP &amp; MÔ PHỎNG</button>
-                <button class="retro-btn ghost" onclick="switchView('summary')">📌 XEM KẾT LUẬN CHỦ ĐỀ</button>
-              </div>
-            </div>
-            <div class="capitalist-terminal">
-              <div>
-                <div class="avatar-box">
-                  <div class="pixel-avatar">🎩</div>
-                  <div>
-                    <div style="color: var(--red-bright); font-weight: 800; font-size: 0.95rem;">HỒ SƠ: NHÀ TƯ BẢN</div>
-                    <div style="font-size: 0.78rem; color: var(--cream-muted);">Chu kỳ sản xuất: #01 hoàn tất</div>
-                    <div style="font-size: 0.75rem; color: var(--cream);">Trạng thái: Đang nắm giữ GTTD (M)</div>
-                  </div>
-                </div>
-                <div class="stat-list">
-                  <div class="stat-item"><span>Giá trị thặng dư thu về (M):</span><strong>1.000.000.000 VNĐ</strong></div>
-                  <div class="stat-item"><span>Phương án 1 (Tiêu dùng hết):</span><strong style="color: var(--cream-muted);">Tái SX Giản đơn</strong></div>
-                  <div class="stat-item"><span>Phương án 2 (Tích lũy 80%):</span><strong>Tái SX Mở rộng</strong></div>
-                  <div class="stat-item"><span>Phân bổ Tư bản phụ thêm:</span><strong>60% Δc / 20% Δv</strong></div>
-                </div>
-              </div>
-              <div class="formula-banner">CÔNG THỨC CỐT LÕI: c + v + m → C' (Tích lũy Δc + Δv)</div>
-            </div>
+          <h1 class="hero-heading">
+            TÍCH LŨY TƯ BẢN &amp; <br>BÀI TOÁN <span class="accent">GIÁ TRỊ THẶNG DƯ</span>
+          </h1>
+
+          <div class="pov-box">
+            <span class="pov-label">// TÌNH HUỐNG THẢO LUẬN / PHÂN VAI:</span>
+            <p class="pov-text">
+              “Anh/Chị là một nhà tư bản, sau khi thực hiện hành vi bóc lột giai cấp công nhân và thu về giá trị thặng dư (m) thì anh/chị sẽ sử dụng khoản giá trị đó như thế nào?”
+            </p>
+          </div>
+
+          <div class="cta-row">
+            <button class="retro-btn primary" onclick="switchView('flipbook')">📖 MỞ FLIPBOOK LÝ THUYẾT</button>
+            <button class="retro-btn secondary" onclick="switchView('game')">🎮 VÀO GAME MÔ PHỎNG</button>
           </div>
         </div>
       </div>
+
+      <!-- 3 MODULE KIẾN THỨC -->
+      <div style="font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: var(--cream-soft); margin-bottom: 8px;">
+        📁 HỆ THỐNG LÝ LUẬN TRỌNG TÂM
+      </div>
       <div class="module-grid">
+        <!-- Module 1 -->
         <div class="module-card">
           <div>
-            <span class="module-num">PHẦN II.1</span>
-            <h3>1. Bản chất của tích lũy tư bản</h3>
-            <p>Giải mã nguồn gốc của tư bản phụ thêm từ giá trị thặng dư (m) và sự khác biệt cốt lõi giữa tái sản xuất giản đơn với tái sản xuất mở rộng.</p>
-            <ul class="module-points"><li>Khái niệm Giá trị thặng dư (m)</li><li>Tiêu dùng cá nhân vs. Tích lũy tư bản</li><li>Bài toán phân bổ 1 tỷ VNĐ (20% - 80%)</li><li>Nguồn gốc duy nhất của tư bản tích lũy</li></ul>
+            <div class="card-top">
+              <span class="card-num">SECTION 01</span>
+              <span style="color:var(--cream-muted); font-size: 0.72rem;">BẢN CHẤT</span>
+            </div>
+            <h3 class="card-title">1. Bản Chất Của Tích Lũy</h3>
+            <p class="card-desc">Tái sản xuất mở rộng TBCN. Thực chất là biến một phần giá trị thặng dư thành tư bản phụ thêm (tư bản hóa m)[cite: 1].</p>
+            <ul class="card-bullets">
+              <li><span class="bullet">/</span> Nguồn gốc duy nhất: Giá trị thặng dư ($m$)[cite: 1]</li>
+              <li><span class="bullet">/</span> Tái sản xuất giản đơn vs Mở rộng[cite: 1]</li>
+              <li><span class="bullet">/</span> Tư bản hóa thặng dư ($\Delta c + \Delta v$)</li>
+            </ul>
           </div>
-          <button class="retro-btn ghost" onclick="openFlipbookAtSpread(1)">ĐỌC TRONG FLIPBOOK →</button>
+          <button class="retro-btn ghost sm" onclick="switchView('flipbook')">ĐỌC TRONG FLIPBOOK →</button>
         </div>
+
+        <!-- Module 2 -->
         <div class="module-card">
           <div>
-            <span class="module-num">PHẦN II.2</span>
-            <h3>2. Nhân tố ảnh hưởng quy mô tích lũy</h3>
-            <p>Khi tỷ lệ phân chia tích lũy và tiêu dùng đã cố định, quy mô tích lũy phụ thuộc trực tiếp vào khối lượng giá trị thặng dư (M) qua 4 nhân tố.</p>
-            <ul class="module-points"><li>Trình độ khai thác sức lao động (m')</li><li>Năng suất lao động xã hội</li><li>Chênh lệch tư bản sử dụng &amp; tiêu dùng</li><li>Đại lượng tư bản ứng trước (K)</li></ul>
+            <div class="card-top">
+              <span class="card-num">SECTION 02</span>
+              <span style="color:var(--cream-muted); font-size: 0.72rem;">QUY MÔ</span>
+            </div>
+            <h3 class="card-title">2. Nhân Tố Quy Mô Tích Lũy</h3>
+            <p class="card-desc">Khi tỷ lệ phân chia tích lũy/tiêu dùng xác định, quy mô phụ thuộc khối lượng m qua 4 nhân tố[cite: 1].</p>
+            <ul class="card-bullets">
+              <li><span class="bullet">/</span> Trình độ bóc lột sức lao động ($m'$)[cite: 1]</li>
+              <li><span class="bullet">/</span> Năng suất lao động xã hội[cite: 1]</li>
+              <li><span class="bullet">/</span> Chênh lệch tư bản dùng &amp; tiêu[cite: 1]</li>
+              <li><span class="bullet">/</span> Quy mô tư bản ứng trước ($K$)[cite: 1]</li>
+            </ul>
           </div>
-          <button class="retro-btn ghost" onclick="openFlipbookAtSpread(2)">ĐỌC TRONG FLIPBOOK →</button>
+          <button class="retro-btn ghost sm" onclick="switchView('flipbook')">ĐỌC TRONG FLIPBOOK →</button>
         </div>
+
+        <!-- Module 3 -->
         <div class="module-card">
           <div>
-            <span class="module-num">PHẦN II.3</span>
-            <h3>3. Một số hệ quả của tích lũy tư bản</h3>
-            <p>Quá trình tích lũy không chỉ mở rộng quy mô sản xuất mà còn làm sâu sắc thêm các hệ quả kinh tế - xã hội tất yếu đối với người lao động.</p>
-            <ul class="module-points"><li>Tích tụ tư bản &amp; Tập trung tư bản</li><li>Cấu tạo hữu cơ (c/v) tăng &amp; Thất nghiệp</li><li>Phân hóa giàu nghèo &amp; "Sợi xích vàng"</li><li>Mâu thuẫn đối kháng Tư bản – Lao động</li></ul>
+            <div class="card-top">
+              <span class="card-num">SECTION 03</span>
+              <span style="color:var(--cream-muted); font-size: 0.72rem;">HỆ QUẢ</span>
+            </div>
+            <h3 class="card-title">3. Một Số Hệ Quả Tất Yếu</h3>
+            <p class="card-desc">Tích lũy thúc đẩy lực lượng sản xuất nhưng phân hóa sâu sắc quan hệ sản xuất tư bản chủ nghĩa[cite: 1].</p>
+            <ul class="card-bullets">
+              <li><span class="bullet">/</span> Tích tụ tư bản và Tập trung tư bản[cite: 1]</li>
+              <li><span class="bullet">/</span> Tăng cấu tạo hữu cơ ($c/v$)[cite: 1]</li>
+              <li><span class="bullet">/</span> Bần cùng hóa công nhân &amp; thất nghiệp[cite: 1]</li>
+            </ul>
           </div>
-          <button class="retro-btn ghost" onclick="openFlipbookAtSpread(3)">ĐỌC TRONG FLIPBOOK →</button>
+          <button class="retro-btn ghost sm" onclick="switchView('flipbook')">ĐỌC TRONG FLIPBOOK →</button>
         </div>
       </div>
     </section>
 
-    <!-- PHẦN FLIPBOOK TÍCH HỢP HEYZINE -->
+    <!-- VIEW 2: FLIPBOOK HEYZINE -->
     <section id="view-flipbook" class="view-section">
       <div class="os-window">
         <div class="os-window-header">
-          <div class="window-title"><span>SÁCH LẬT ĐIỆN TỬ // CHƯƠNG 3 - MỤC II</span></div>
+          <div class="window-title">
+            <span>SÁCH LẬT ĐIỆN TỬ — HEYZINE E-BOOK</span>
+          </div>
           <span class="window-tag">ONLINE VIEWER</span>
         </div>
         <div class="os-window-body">
@@ -300,25 +688,19 @@
               <span>TÀI NGUYÊN: <strong>SÁCH LẬT ĐIỆN TỬ (CHƯƠNG 3 - MỤC II)</strong></span>
             </div>
             <div style="display: flex; gap: 8px;">
-              <a href="https://heyzine.com/flip-book/8d1b1fbf46.html" target="_blank" rel="noopener noreferrer" class="retro-btn ghost sm">
-                ↗ MỞ TAB MỚI
-              </a>
-              <button class="retro-btn ghost sm" onclick="reloadFlipbook()">
-                🔄 TẢI LẠI
-              </button>
-              <button class="retro-btn primary sm" onclick="toggleFlipbookFullscreen()">
-                ⛶ TOÀN MÀN HÌNH
-              </button>
+              <a href="https://heyzine.com/flip-book/8d1b1fbf46.html" target="_blank" rel="noopener noreferrer" class="retro-btn ghost sm">↗ MỞ TAB MỚI</a>
+              <button class="retro-btn ghost sm" onclick="reloadFlipbook()">🔄 TẢI LẠI</button>
+              <button class="retro-btn primary sm" onclick="toggleFlipbookFullscreen()">⛶ TOÀN MÀN HÌNH</button>
             </div>
           </div>
           <div class="flipbook-container" id="flipbookWrapper">
             <iframe 
-              id="flipbookIframe"
-              class="flipbook-iframe"
+              id="flipbookIframe" 
+              class="flipbook-iframe" 
               src="https://heyzine.com/flip-book/8d1b1fbf46.html" 
-              allowfullscreen="true"
-              webkitallowfullscreen="true"
-              mozallowfullscreen="true"
+              allowfullscreen="true" 
+              webkitallowfullscreen="true" 
+              mozallowfullscreen="true" 
               allow="fullscreen; clipboard-write">
             </iframe>
           </div>
@@ -326,91 +708,69 @@
       </div>
     </section>
 
-    <!-- VIEW GAME -->
+    <!-- VIEW 3: GAME CAPITAL RUSH -->
     <section id="view-game" class="view-section">
       <div class="os-window">
         <div class="os-window-header">
-          <div class="window-title"><span>TRÒ CHƠI MÔ PHỎNG // CAPITAL RUSH</span></div>
+          <div class="window-title">
+            <span>CAPITAL RUSH — MÔ PHỎNG TÍCH LŨY</span>
+          </div>
           <span class="window-tag" id="cgPhaseTag">SẴN SÀNG</span>
         </div>
         <div class="os-window-body" id="cgRoot"></div>
       </div>
     </section>
 
-    <!-- VIEW KẾT LUẬN -->
-    <section id="view-summary" class="view-section">
-      <div class="os-window">
-        <div class="os-window-header">
-          <div class="window-title"><span>TỔNG KẾT BÀI HỌC // QUYẾT SÁCH TÁI ĐẦU TƯ</span></div>
-          <span class="window-tag">TỔNG KẾT</span>
-        </div>
-        <div class="os-window-body">
-          <div class="pov-question-box" style="margin-top: 0;">
-            <span class="pov-label">// ĐÁP ÁN BÀI TOÁN PHÂN BỔ CỦA NHÀ TƯ BẢN:</span>
-            <p class="pov-text">Dưới áp lực của quy luật giá trị thặng dư và quy luật cạnh tranh khốc liệt, nhà tư bản <strong>buộc phải tư bản hóa giá trị thặng dư</strong> (tích lũy để tái sản xuất mở rộng) thay vì dùng toàn bộ cho tiêu dùng cá nhân.</p>
-          </div>
-          <div style="font-size: 0.95rem; line-height: 1.7; color: var(--cream-soft); margin-top: 16px;">
-            <p style="margin-bottom: 12px;">• <strong>Nguồn gốc tư bản phụ thêm:</strong> Hoàn toàn sinh ra từ giá trị thặng dư ($m$) do hao phí sức lao động của giai cấp công nhân tạo ra[cite: 7].</p>
-            <p style="margin-bottom: 12px;">• <strong>Đổi mới công nghệ ($c/v$ tăng):</strong> Dẫn đến tăng năng suất lao động xã hội nhưng đồng thời hình thành đội quân thất nghiệp tương đối dự bị[cite: 7].</p>
-            <p>• <strong>Bản chất quy luật tích lũy:</strong> Một cực tích lũy của cải về tay giai cấp tư sản, cực đối lập tích lũy bần cùng và sự phụ thuộc về phía giai cấp vô sản làm thuê[cite: 7].</p>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
+  <!-- FOOTER -->
+  <footer class="os-footer">
+    KTCT MÁC - LÊNIN // CHƯƠNG 3: GIÁ TRỊ THẶNG DƯ TRONG KTTT
+  </footer>
+
+  <!-- SCRIPT ĐIỀU HƯỚNG VÀ GIAO DIỆN -->
   <script>
-    function switchView(n, clickedBtn) {
+    function switchView(n) {
       document.querySelectorAll('.view-section').forEach(s => s.classList.toggle('active', s.id === 'view-' + n));
-      
-      // Active nút tương ứng trên thanh Menu
-      let targetBtn = clickedBtn;
       document.querySelectorAll('.os-nav-btn').forEach(b => {
-        const isTarget = (b.getAttribute('onclick') || '').includes("'" + n + "'");
-        b.classList.toggle('active', isTarget);
-        if (isTarget) targetBtn = b;
+        const matches = (b.getAttribute('onclick') || '').includes("'" + n + "'");
+        b.classList.toggle('active', matches);
+        if (matches && window.innerWidth <= 980) {
+          b.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
       });
-
-      // Tự động cuộn mượt nút đang chọn vào giữa thanh Menu (hé lộ các tab 2 bên)
-      if (targetBtn && targetBtn.scrollIntoView) {
-        targetBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      }
-
       window.scrollTo(0, 0);
 
       const crtBtn = document.getElementById('crtToggleBtn');
+      if (!crtBtn) return;
 
-      // Tắt CRT khi xem Flipbook hoặc Game
+      // 1. Tự động TẮT khi vào [02] Flipbook hoặc [03] Game (chữ nét, không sọc quét)[cite: 1]
       if (n === 'flipbook' || n === 'game') {
-        if (crtBtn && crtBtn.classList.contains('active')) {
-          crtBtn.classList.remove('active');
-          document.body.classList.remove('crt-enabled');
-          if (crtBtn.firstElementChild) crtBtn.firstElementChild.textContent = '📺 CRT: OFF';
-        }
-        if (n === 'flipbook') {
-          setTimeout(() => {
-            const iframe = document.getElementById('flipbookIframe');
-            if (iframe && iframe.contentWindow) iframe.contentWindow.focus();
-          }, 150);
+        crtBtn.classList.remove('active');
+        document.body.classList.remove('crt-enabled');
+        if (crtBtn.firstElementChild) {
+          crtBtn.firstElementChild.textContent = '📺 CRT: OFF';
         }
       } 
-      // Bật lại CRT khi quay về Home hoặc Kết luận
-      else if (n === 'home' || n === 'summary') {
-        if (crtBtn) {
-          crtBtn.classList.add('active');
-          document.body.classList.add('crt-enabled');
-          if (crtBtn.firstElementChild) crtBtn.firstElementChild.textContent = '📺 CRT: ON';
+      // 2. Tự động BẬT LẠI khi về [01] Desktop Home[cite: 1]
+      else if (n === 'home') {
+        crtBtn.classList.add('active');
+        document.body.classList.add('crt-enabled');
+        if (crtBtn.firstElementChild) {
+          crtBtn.firstElementChild.textContent = '📺 CRT: ON';
         }
       }
-    }
 
-    function openFlipbookAtSpread() { 
-      switchView('flipbook'); 
+      // Auto focus vào iframe flipbook khi mở
+      if (n === 'flipbook') {
+        const f = document.getElementById('flipbookIframe');
+        if (f) setTimeout(() => f.focus(), 300);
+      }
     }
 
     function reloadFlipbook() {
       const f = document.getElementById('flipbookIframe');
-      if (f) { f.src = f.src; }
+      if (f) f.src = f.src;
     }
 
     function toggleFlipbookFullscreen() {
@@ -434,9 +794,7 @@
 
       const req = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen || target.msRequestFullscreen;
       if (req) {
-        req.call(target).catch(() => {
-          kichHoatFullscreenMobile(wrapper);
-        });
+        req.call(target).catch(() => kichHoatFullscreenMobile(wrapper));
       } else {
         kichHoatFullscreenMobile(wrapper);
       }
@@ -448,30 +806,34 @@
         const btn = document.createElement('button');
         btn.id = 'mobileExitFsBtn';
         btn.textContent = '✕ THU NHỎ';
-        btn.setAttribute('style', 'position:fixed; top:12px; right:12px; z-index:1000000; background:rgba(206,41,26,0.95); color:#fff; border:2px solid #fff; padding:6px 14px; font-weight:bold; font-family:monospace; border-radius:4px; font-size:12px; cursor:pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.5);');
+        btn.setAttribute('style', 'position:fixed; top:12px; right:12px; z-index:10000000; background:rgba(206,41,26,0.95); color:#fff; border:1px solid #fff; padding:8px 14px; font-weight:bold; font-family:monospace; border-radius:4px; font-size:12px; cursor:pointer;');
         btn.onclick = toggleFlipbookFullscreen;
         document.body.appendChild(btn);
       }
     }
 
     function toggleCRT() { 
-      const b = document.getElementById('crtToggleBtn'), on = b.classList.toggle('active'); 
+      const b = document.getElementById('crtToggleBtn');
+      const on = b.classList.toggle('active'); 
       document.body.classList.toggle('crt-enabled', on); 
-      b.firstElementChild.textContent = '📺 CRT: ' + (on ? 'ON' : 'OFF'); 
+      b.textContent = '📺 CRT: ' + (on ? 'ON' : 'OFF'); 
     }
 
     function toggleSound() { 
-      const b = document.getElementById('soundToggleBtn'), on = b.classList.toggle('active'); 
-      b.firstElementChild.textContent = '🔊 SFX: ' + (on ? 'ON' : 'OFF'); 
+      const b = document.getElementById('soundToggleBtn');
+      const on = b.classList.toggle('active'); 
+      b.textContent = '🔊 SFX: ' + (on ? 'ON' : 'OFF'); 
     }
 
-    const tickClock = () => { 
-      document.getElementById('osClock').textContent = new Date().toLocaleTimeString('vi-VN', { hour12: false }); 
+    const tickClock = () => {
+      const clock = document.getElementById('osClock');
+      if (clock) clock.textContent = new Date().toLocaleTimeString('vi-VN', { hour12: false });
     };
-    tickClock(); setInterval(tickClock, 1000);
+    tickClock(); 
+    setInterval(tickClock, 1000);
   </script>
 
-  <!-- MÃ NGUỒN ARCADE GAME -->
+  <!-- LOGIC TRÒ CHƠI CAPITAL RUSH (VỚI FIREBASE & SFX) -->
   <script>
 (function () {
   const TEN_GAME = 'CAPITAL RUSH';
@@ -480,6 +842,7 @@
   const THOI_GIAN_PHA2 = 30;
   const DIEM_DUNG = 40 * TRIEU;
   const KHOA_BXH = 'capital_os_bxh';
+  const FIREBASE_URL = 'https://kctcnhom5-default-rtdb.asia-southeast1.firebasedatabase.app/bxh.json';
 
   const CAU_HOI = [
     { tag: 'MỞ ĐẦU',
@@ -552,40 +915,54 @@
     tick(); hen = setInterval(tick, 100);
   }
   const thanhGio = () => `<div class="cg-timer"><span>⏱</span><div class="meter-track"><div id="cgBar" class="meter-fill" style="width:100%"></div></div><strong id="cgTime">--</strong></div>`;
-  const hud = K => `<div class="cg-hud"><div>TƯ BẢN K<strong>${tien(K)}</strong></div><div>C (bất biến) = 80%K<strong>${tien(K * .8)}</strong></div><div>V (khả biến) = 20%K<strong>${tien(K * .2)}</strong></div></div>`;
+  const hud = K => `<div class="cg-hud"><div>TƯ BẢN K<strong>${tien(K)}</strong></div><div>C = 80%K<strong>${tien(K * .8)}</strong></div><div>V = 20%K<strong>${tien(K * .2)}</strong></div></div>`;
 
   function hien(html) { root().innerHTML = html; khoa = false; }
 
   function manThietLap() {
     dungGio(); S = { ten: '', K: 0, pha1: [], nhatKy: [] }; tag('THIẾT LẬP');
     hien(`<div class="cg-center">
-      <h2>🎩 ${esc(TEN_GAME)}</h2>
-      <div class="cg-quote">"Thị trường không nhớ ai là người bắt đầu. Thị trường chỉ nhớ ai là người sống sót và đứng trên đỉnh cao."</div>
-      <p style="line-height:1.6;color:var(--cream-soft)">Năm 2000, nền kinh tế bước vào thời kỳ bùng nổ khởi nghiệp. Hàng loạt doanh nghiệp mới xuất hiện, ai cũng mang tham vọng trở thành người dẫn đầu thị trường. Các nhà đầu tư gọi đây là thời đại của những cơ hội.</p>
-      <div class="cg-rules"><strong>THỂ LỆ</strong><br>• Chơi cá nhân: bạn nhập vai một nhà tư bản độc lập, khởi đầu với <strong>hai bàn tay trắng</strong>.<br>• <strong>PHA 1 – GỌI VỐN:</strong> dùng tri thức vượt qua 4 thử thách (25 giây/câu) để kiếm vốn ban đầu.<br>• <strong>PHA 2 – ĐẦU TƯ &amp; TÍCH LŨY:</strong> cầm số vốn vừa kiếm được, ra quyết định đầu tư hoặc tiêu dùng qua 4 tình huống (30 giây/tình huống).</div>
-      <label style="font-family:var(--font-mono);font-size:.85rem">// NHẬP TÊN DOANH NGHIỆP:</label>
-      <input id="cgTen" class="retro-input cg-input" maxlength="30" placeholder="VD: Tập đoàn Sao Đỏ" autocomplete="off">
-      <button class="retro-btn primary" data-act="batdau">▶ KHỞI NGHIỆP</button></div>`);
+      <h2 style="font-size:1.8rem;text-transform:uppercase;margin-bottom:8px;">🎩 ${esc(TEN_GAME)}</h2>
+      <p style="color:var(--cream-muted);font-size:0.95rem;line-height:1.6;">Khởi đầu với <strong>hai bàn tay trắng</strong>, bạn phải dùng kiến thức vượt qua các câu hỏi để kiếm vốn, sau đó ra quyết định đầu tư giá trị thặng dư để cạnh tranh trên thương trường[cite: 3].</p>
+      <div class="cg-rules">
+        <strong>THỂ LỆ CUỘC THI:</strong><br>
+        • <strong>PHA 1 (GỌI VỐN):</strong> 4 thử thách trắc nghiệm lý thuyết (25s/câu) để tích lũy tư bản K ban đầu[cite: 3].<br>
+        • <strong>PHA 2 (ĐẦU TƯ):</strong> Đóng vai nhà tư bản phân bổ giá trị thặng dư m qua 4 tình huống kinh doanh gay cấn (30s/tình huống)[cite: 3].
+      </div>
+      <label style="font-family:var(--font-mono);font-size:.85rem;color:var(--cream-soft);">// NHẬP TÊN DOANH NGHIỆP CỦA BẠN:</label>
+      <input id="cgTen" class="retro-input" maxlength="30" placeholder="VD: Tập đoàn Công nghiệp Alpha" autocomplete="off">
+      <button class="retro-btn primary" data-act="batdau">BẮT ĐẦU KHỞI NGHIỆP ▶</button>
+    </div>`);
     setTimeout(() => $('cgTen') &&$('cgTen').focus(), 50);
   }
 
   function manMoPha1() {
     tag('PHA 1 • GỌI VỐN');
-    hien(`<div class="cg-center"><h2>Mọi đế chế đều cần một điểm khởi đầu</h2>
-      <p style="line-height:1.7">Bạn chưa có vốn, chưa có doanh nghiệp và chưa thể bắt đầu hoạt động sản xuất.<br>Hãy vượt qua <strong>4 thử thách</strong> để giành lấy nguồn vốn đầu tiên. Thành quả của bạn sẽ quyết định nguồn lực bạn mang vào cuộc đua đầu tư phía trước.</p>
-      <div class="cg-quote">Hãy nhớ: vốn ban đầu tạo nên xuất phát điểm, nhưng không quyết định ai sẽ là kẻ chiến thắng cuối cùng.</div>
-      <div class="cg-rules"><strong>QUY ĐỊNH CỘNG ĐIỂM</strong><br>• Trả lời đúng: <strong>+40.000.000đ</strong><br>• Thưởng tốc độ (tính theo số giây còn lại): 11–15s: +10.000.000đ • 16–20s: +20.000.000đ • 21–25s: +30.000.000đ<br>• Trả lời sai: không được gì.</div>
-      <button class="retro-btn primary" data-act="cau" data-i="0">BẮT ĐẦU THỬ THÁCH 1 ▶</button></div>`);
+    hien(`<div class="cg-center">
+      <h2 style="font-size:1.6rem;text-transform:uppercase;margin-bottom:12px;">Pha 1: Gọi Vốn Ban Đầu</h2>
+      <p style="line-height:1.7;color:var(--cream-muted);">Hãy vượt qua <strong>4 thử thách lý thuyết</strong> để giành lấy lượng tư bản ban đầu bước vào thị trường.</p>
+      <div class="cg-rules">
+        • Trả lời đúng: <strong>+40.000.000đ</strong><br>
+        • Thưởng tốc độ (còn lại trên 11s): +10.000.000đ đến +30.000.000đ<br>
+        • Trả lời sai hoặc hết giờ: không nhận được vốn.
+      </div>
+      <button class="retro-btn primary" data-act="cau" data-i="0">VÀO THỬ THÁCH 1 ▶</button>
+    </div>`);
   }
 
   function manCauHoi(i) {
     const c = CAU_HOI[i]; tag(`PHA 1 • CÂU ${i + 1}/4`);
     hien(`${thanhGio()}
-      <div class="quiz-header-bar"><span>DOANH NGHIỆP: <strong>${esc(S.ten)}</strong></span><span>VỐN HIỆN CÓ: <strong style="color:var(--red-bright)">${tien(S.K)}</strong></span></div>
-      <div class="quiz-question-card"><span class="quiz-q-tag">THỬ THÁCH ${i + 1} • ${c.tag}</span>
-        <div class="quiz-q-text">${esc(c.q).replace(/\n/g, '<br>')}</div>
-        <div class="quiz-options">${c.o.map((t, k) => `<button class="quiz-opt-btn" data-act="tl" data-i="${i}" data-k="${k}"><span class="opt-letter">${'ABCD'[k]}</span><span>${esc(t)}</span></button>`).join('')}</div>
-        <div id="cgFb" class="quiz-feedback"></div></div>`);
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-dark);margin-bottom:16px;font-family:var(--font-mono);font-size:0.85rem;">
+        <span>DOANH NGHIỆP: <strong>${esc(S.ten)}</strong></span>
+        <span>VỐN: <strong style="color:var(--red-bright)">${tien(S.K)}</strong></span>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--red-bright);margin-bottom:6px;">THỬ THÁCH ${i + 1} // ${c.tag}</div>
+        <div style="font-size:1.15rem;font-weight:700;line-height:1.5;margin-bottom:20px;color:var(--cream);">${esc(c.q).replace(/\n/g, '<br>')}</div>
+        <div class="quiz-options">${c.o.map((t, k) => `<button class="quiz-opt-btn" data-act="tl" data-i="${i}" data-k="${k}"><span class="opt-letter">${'ABCD'[k]}.</span><span>${esc(t)}</span></button>`).join('')}</div>
+        <div id="cgFb" class="quiz-feedback"></div>
+      </div>`);
     batDauGio(THOI_GIAN_PHA1, () => traLoiPha1(i, -1, 0));
   }
 
@@ -603,29 +980,43 @@
     });
     dung ? amDung() : amSai();
     const fb = $('cgFb'); fb.classList.add('show');
-    fb.innerHTML = `<strong>${dung ? '✅ CHÍNH XÁC!' : (k < 0 ? '⏰ HẾT GIỜ!' : '❌ SAI RỒI!')}</strong> ${dung ? `+${tien(DIEM_DUNG)}${thuong ? ` & thưởng tốc độ +${tien(thuong)} (còn ${giay}s)` : ' (không có thưởng tốc độ)'}` : 'Bạn không nhận được vốn từ câu này.'}
-      <p style="margin:8px 0;color:var(--cream-soft)">Đáp án đúng: <strong>${'ABCD'[c.d]}</strong>. ${esc(c.giaiThich)}</p>
-      <button class="retro-btn primary" data-act="${i < 3 ? 'cau' : 'pha2'}" data-i="${i + 1}">${i < 3 ? 'CÂU TIẾP THEO ▶' : 'TỔNG KẾT PHA 1 ▶'}</button>`;
+    fb.innerHTML = `<strong>${dung ? '✅ CHÍNH XÁC!' : (k < 0 ? '⏰ HẾT GIỜ!' : '❌ CHƯA ĐÚNG')}</strong> ${dung ? `+${tien(DIEM_DUNG)}${thuong ? ` & thưởng tốc độ +${tien(thuong)}` : ''}` : 'Bạn không tích lũy được vốn từ câu này.'}
+      <p style="margin:10px 0;color:var(--cream-soft)">Đáp án chuẩn: <strong>${'ABCD'[c.d]}</strong>. ${esc(c.giaiThich)}</p>
+      <button class="retro-btn primary" style="margin-top:8px;" data-act="${i < 3 ? 'cau' : 'pha2'}" data-i="${i + 1}">${i < 3 ? 'CÂU TIẾP THEO ▶' : 'CHUYỂN SANG PHA 2 ▶'}</button>`;
   }
 
   function manMoPha2() {
     tag('PHA 2 • ĐẦU TƯ');
-    hien(`<div class="cg-center"><h2>Cá lớn hay bị cá lớn nuốt chửng?</h2>
-      <p style="margin-bottom:6px">Vốn thu được từ Pha 1 của <strong>${esc(S.ten)}</strong>:</p>
+    hien(`<div class="cg-center">
+      <h2 style="font-size:1.6rem;text-transform:uppercase;margin-bottom:8px;">Pha 2: Đầu Tư &amp; Tích Lũy</h2>
+      <p style="color:var(--cream-muted);margin-bottom:6px;">Tổng vốn tư bản K thu được của <strong>${esc(S.ten)}</strong>:</p>
       <div class="cg-big">${tien(S.K)}</div>
-      <p style="line-height:1.7">Bạn đã có vốn trong tay. Nhưng giữ tiền thôi là chưa đủ — bạn phải biến nó thành tư bản, tạo ra giá trị thặng dư và không ngừng mở rộng sản xuất. Khi cuộc đua kết thúc, kẻ mạnh không chỉ chiến thắng mà còn có thể thâu tóm kẻ yếu.</p>
-      <div class="cg-rules"><strong>QUY ƯỚC</strong><br>• K: tư bản tích lũy được ở Pha 1<br>• C (tư bản bất biến) = 80%K &nbsp;•&nbsp; V (tư bản khả biến) = 20%K<br>• Tỷ suất giá trị thặng dư m' = 100%<br>• Mỗi tình huống: 30 giây</div>
-      <button class="retro-btn primary" data-act="th" data-n="1">VÀO TÌNH HUỐNG 1 ▶</button></div>`);
+      <p style="line-height:1.7;color:var(--cream-soft);margin-bottom:20px;">Bạn chuẩn bị đưa số vốn này vào chu kỳ sản xuất để tạo ra giá trị thặng dư m, đồng thời phải đưa ra các quyết định phân bổ sống còn[cite: 3].</p>
+      <div class="cg-rules">
+        <strong>QUY ƯỚC ĐIỀU HÀNH:</strong><br>
+        • Tư bản bất biến C = 80%K | Tư bản khả biến V = 20%K[cite: 3]<br>
+        • Tỷ suất giá trị thặng dư ban đầu m' = 100% ⇒ m = V[cite: 3]<br>
+        • Mỗi tình huống có 30 giây để ra quyết định[cite: 3].
+      </div>
+      <button class="retro-btn primary" data-act="th" data-n="1">VÀO TÌNH HUỐNG 1 ▶</button>
+    </div>`);
   }
 
   function manTH1() {
-    tag('PHA 2 • TÌNH HUỐNG 1/4'); S.m = S.K * 0.2;
+    tag('PHA 2 • TH 1/4'); S.m = S.K * 0.2;
     hien(`${thanhGio()}${hud(S.K)}
-      <div class="quiz-question-card"><span class="quiz-q-tag">TÌNH HUỐNG 1 • BƯỚC VÀO SẢN XUẤT</span>
-        <div class="quiz-q-text">Sau khi tích lũy được số vốn ở Pha 1, bạn chính thức bước vào sản xuất với tư cách nhà tư bản. Theo quy ước, tư bản khả biến V chiếm 20% tổng vốn K. Sau chu kỳ sản xuất I, tỷ suất giá trị thặng dư đạt 100%.<br><br>Vậy sau chu kỳ I, bạn thu được bao nhiêu giá trị thặng dư (m)? <em>(Nhập số tiền VNĐ, không cần ghi đơn vị)</em></div>
-        <input id="cgM" class="retro-input cg-input" inputmode="numeric" placeholder="Nhập m..." autocomplete="off">
-        <button class="retro-btn primary" data-act="th1ok">XÁC NHẬN</button>
-        <div id="cgFb" class="quiz-feedback"></div></div>`);
+      <div>
+        <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--red-bright);margin-bottom:6px;">TÌNH HUỐNG 1 // TÍNH TOÁN GIÁ TRỊ THẶNG DƯ</div>
+        <div style="font-size:1.1rem;font-weight:700;line-height:1.5;margin-bottom:18px;color:var(--cream);">
+          Theo cơ cấu, tư bản khả biến V = 20%K. Sau chu kỳ sản xuất thứ nhất, tỷ suất giá trị thặng dư đạt m' = 100%.<br><br>
+          Vậy sau chu kỳ này, bạn thu về bao nhiêu giá trị thặng dư (m)? <em>(Nhập số tiền VNĐ)</em>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+          <input id="cgM" class="retro-input" style="margin:0;max-width:320px;" inputmode="numeric" placeholder="Nhập số m..." autocomplete="off">
+          <button class="retro-btn primary" data-act="th1ok">XÁC NHẬN</button>
+        </div>
+        <div id="cgFb" class="quiz-feedback"></div>
+      </div>`);
     setTimeout(() => $('cgM') &&$('cgM').focus(), 50);
     batDauGio(THOI_GIAN_PHA2, () => chamTH1(null));
   }
@@ -637,97 +1028,110 @@
     S.nhatKy.push(`TH1: ${dung ? 'đúng' : 'sai/bỏ trống'} (m = ${tien(S.m)})`);
     const inp = $('cgM'); if (inp) inp.disabled = true;
     const fb = $('cgFb'); fb.classList.add('show');
-    fb.innerHTML = `<strong>${dung ? '✅ CHÍNH XÁC!' : (isNaN(v) ? '⏰ BỎ TRỐNG / HẾT GIỜ' : '❌ CHƯA ĐÚNG')}</strong> Giá trị thặng dư thu về: <strong>m = ${tien(S.m)}</strong>
-      ${dung ? '' : `<p style="margin:8px 0;color:var(--cream-soft)">Theo quy ước: V = 20%K và m' = 100%. Công thức m' = (m / V) × 100% ⇒ m = V = 0,2 × K = ${tien(S.m)}.</p>`}
-      <button class="retro-btn primary" data-act="th" data-n="2">TÌNH HUỐNG 2 ▶</button>`;
+    fb.innerHTML = `<strong>${dung ? '✅ CHÍNH XÁC!' : '❌ CHƯA CHÍNH XÁC'}</strong> Giá trị thặng dư thu về: <strong>m = ${tien(S.m)}</strong>
+      <p style="margin:8px 0;color:var(--cream-soft)">Công thức: m' = (m / V) × 100% ⇒ m = V = 0,2 × K = ${tien(S.m)}.</p>
+      <button class="retro-btn primary" style="margin-top:8px;" data-act="th" data-n="2">SANG TÌNH HUỐNG 2 ▶</button>`;
   }
 
   function manTH2() {
-    tag('PHA 2 • TÌNH HUỐNG 2/4');
-    const ops = ['Dùng 80% m cho tiêu dùng cá nhân, giữ 20% tiết kiệm', 'Dùng 50% m để mở rộng sản xuất, 50% còn lại cho tiêu dùng cá nhân', 'Chuyển 100% giá trị thặng dư thành tư bản phụ thêm, mở rộng sản xuất ở chu kỳ tiếp theo'];
+    tag('PHA 2 • TH 2/4');
+    const ops = ['Dùng 80% m cho tiêu dùng xa xỉ cá nhân, giữ 20% tiết kiệm', 'Dùng 50% m mở rộng sản xuất, 50% còn lại cho tiêu dùng cá nhân', 'Chuyển hóa 100% giá trị thặng dư m thành tư bản phụ thêm (tích lũy tối đa)'];
     hien(`${thanhGio()}${hud(S.K)}
-      <div class="quiz-question-card"><span class="quiz-q-tag">TÌNH HUỐNG 2 • QUYẾT ĐỊNH TÍCH LŨY</span>
-        <div class="quiz-q-text">Sau chu kỳ I, doanh nghiệp thu được giá trị thặng dư m = <span style="color:var(--red-bright)">${tien(S.m)}</span>. Trước cơ hội mở rộng sản xuất, bạn sử dụng khoản này như thế nào?</div>
-        <div class="quiz-options" style="grid-template-columns:1fr">${ops.map((t, k) => `<button class="quiz-opt-btn" data-act="th2" data-k="${k}"><span class="opt-letter">${'ABC'[k]}</span><span>${t}</span></button>`).join('')}</div>
-        <p style="font-size:.8rem;color:var(--cream-muted);margin-top:10px">⚠ Hết giờ không chọn: mặc định phương án A (K' = K).</p>
-        <div id="cgFb" class="quiz-feedback"></div></div>`);
+      <div>
+        <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--red-bright);margin-bottom:6px;">TÌNH HUỐNG 2 // PHÂN CHIA THẶNG DƯ (m = ${tien(S.m)})</div>
+        <div style="font-size:1.1rem;font-weight:700;line-height:1.5;margin-bottom:18px;color:var(--cream);">
+          Trước sự cạnh tranh từ các doanh nghiệp khác, bạn quyết định sử dụng khoản thặng dư m này như thế nào?
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          ${ops.map((t, k) => `<button class="quiz-opt-btn" data-act="th2" data-k="${k}"><span class="opt-letter">${'ABC'[k]}.</span><span>${t}</span></button>`).join('')}
+        </div>
+        <div id="cgFb" class="quiz-feedback"></div>
+      </div>`);
     batDauGio(THOI_GIAN_PHA2, () => chonTH2(0, true));
   }
   function chonTH2(k, hetGio) {
     if (khoa) return; khoa = true; dungGio();
-    const he = [0, 0.5, 1][k], truoc = S.K;
-    S.K = truoc + he * S.m; S.Kp = S.K; S.c2 = k;
-    S.nhatKy.push(`TH2: chọn ${'ABC'[k]} → K' = ${tien(S.K)}`);
+    const he = [0, 0.5, 1][k];
+    S.K = S.K + he * S.m; S.Kp = S.K; S.c2 = k;
+    amDung();
     document.querySelectorAll('.quiz-opt-btn').forEach((b, i) => { b.disabled = true; if (i === k) b.classList.add('correct'); });
-    beep(520, .15);
     const fb = $('cgFb'); fb.classList.add('show');
-    fb.innerHTML = `<strong>${hetGio ? '⏰ HẾT GIỜ — ' : ''}Cập nhật tư bản:</strong> K' = <strong>${tien(S.K)}</strong>
-      <button class="retro-btn primary" data-act="th" data-n="3">TÌNH HUỐNG 3 ▶</button>`;
+    fb.innerHTML = `<strong>Tư bản sau chu kỳ:</strong> K' = <strong>${tien(S.K)}</strong>
+      <button class="retro-btn primary" style="margin-top:10px;" data-act="th" data-n="3">SANG TÌNH HUỐNG 3 ▶</button>`;
   }
 
   function manTH3() {
-    tag('PHA 2 • TÌNH HUỐNG 3/4'); S.m2 = 0.2 * S.K;
+    tag('PHA 2 • TH 3/4'); S.m2 = 0.2 * S.K;
     hien(`${thanhGio()}${hud(S.K)}
-      <div class="quiz-question-card"><span class="quiz-q-tag">TÌNH HUỐNG 3 • CUỘC ĐUA CÔNG NGHỆ</span>
-        <div class="quiz-q-text">Sang chu kỳ II, tư bản khả biến mới V' = 20% × K' và với m' = 100%, bạn thu thêm m₂ = V' = <span style="color:var(--red-bright)">${tien(S.m2)}</span>. Các đối thủ bắt đầu đổi mới công nghệ để hạ giá thành. Bạn quyết định phân bổ m₂ và điều chỉnh cơ cấu đầu tư thế nào?</div>
-        <div class="quiz-options" style="grid-template-columns:1fr">
-          <button class="quiz-opt-btn" data-act="th3" data-k="0"><span class="opt-letter">A</span><span>Duy trì công nghệ cũ</span></button>
-          <button class="quiz-opt-btn" data-act="th3" data-k="1"><span class="opt-letter">B</span><span>Đổi mới công nghệ, trích 90% m₂ để mua máy móc hiện đại, giảm tỷ lệ chi trả cho sức lao động</span></button></div>
-        <div id="cgFb" class="quiz-feedback"></div></div>`);
+      <div>
+        <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--red-bright);margin-bottom:6px;">TÌNH HUỐNG 3 // ĐỔI MỚI CÔNG NGHỆ (m₂ = ${tien(S.m2)})</div>
+        <div style="font-size:1.1rem;font-weight:700;line-height:1.5;margin-bottom:18px;color:var(--cream);">
+          Các đối thủ bắt đầu áp dụng tự động hóa máy móc để hạ giá thành. Bạn điều chỉnh cơ cấu đầu tư như thế nào?
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <button class="quiz-opt-btn" data-act="th3" data-k="0"><span class="opt-letter">A.</span><span>Duy trì công nghệ cũ để tiết kiệm chi phí mua máy</span></button>
+          <button class="quiz-opt-btn" data-act="th3" data-k="1"><span class="opt-letter">B.</span><span>Đổi mới công nghệ: dồn 90% m₂ mua dây chuyền mới, nâng cao cấu tạo hữu cơ (c/v)</span></button>
+        </div>
+        <div id="cgFb" class="quiz-feedback"></div>
+      </div>`);
     batDauGio(THOI_GIAN_PHA2, () => chonTH3(0, true));
   }
   function chonTH3(k, hetGio) {
     if (khoa) return; khoa = true; dungGio();
     S.c3 = k; const thuong = k === 1 ? 0.15 * S.m2 : 0;
     S.K = S.K + S.m2 + thuong; S.K2 = S.K;
-    S.nhatKy.push(`TH3: chọn ${'AB'[k]} → K₂ = ${tien(S.K)}`);
+    k === 1 ? amDung() : amSai();
     document.querySelectorAll('.quiz-opt-btn').forEach((b, i) => { b.disabled = true; if (i === k) b.classList.add('correct'); });
-    beep(520, .15);
     const fb = $('cgFb'); fb.classList.add('show');
-    fb.innerHTML = k === 0
-      ? `<strong>K₂ = ${tien(S.K)}</strong><div class="cg-warn">⚠ Năng suất thấp hơn trung bình thị trường. Hàng hóa bán chậm.</div>
-         <button class="retro-btn primary" style="margin-top:12px" data-act="th" data-n="4">TÌNH HUỐNG 4 ▶</button>`
-      : `<strong>K₂ = ${tien(S.K)}</strong><div class="cg-good">✅ Thu được giá trị thặng dư siêu ngạch (+${tien(thuong)}).</div>
-         <button class="retro-btn primary" style="margin-top:12px" data-act="th" data-n="4">TÌNH HUỐNG 4 ▶</button>`;
+    fb.innerHTML = k === 0 
+      ? `<strong>K₂ = ${tien(S.K)}</strong><p style="color:var(--red-bright);margin:6px 0;">⚠ Năng suất thấp hơn mặt bằng thị trường, hàng hóa khó tiêu thụ.</p><button class="retro-btn primary" style="margin-top:8px;" data-act="th" data-n="4">TÌNH HUỐNG CUỐI ▶</button>`
+      : `<strong>K₂ = ${tien(S.K)}</strong><p style="color:#4ade80;margin:6px 0;">✅ Năng suất vượt trội, thu được giá trị thặng dư siêu ngạch (+${tien(thuong)}).</p><button class="retro-btn primary" style="margin-top:8px;" data-act="th" data-n="4">TÌNH HUỐNG CUỐI ▶</button>`;
   }
 
   function manTH4() {
-    tag('PHA 2 • TÌNH HUỐNG 4/4');
-    const ops = ['Tăng thời lượng làm việc của công nhân từ 8h lên 10h/ngày', 'Nhà tư bản cắt giảm 100% chi tiêu cá nhân, dồn hết giá trị thặng dư thu được vào duy trì sản xuất, cải tiến kĩ thuật, tối ưu quy trình', 'Bán tháo tài sản và thu hẹp 50% quy mô'];
+    tag('PHA 2 • TH 4/4');
+    const ops = [
+      'Ép công nhân tăng giờ làm từ 8h lên 10h/ngày (tăng giá trị thặng dư tuyệt đối)',
+      'Cắt giảm 100% tiêu dùng cá nhân, tập trung tối ưu hóa dây chuyền và quy trình quản trị',
+      'Bán tháo máy móc và thu hẹp 50% quy mô sản xuất'
+    ];
     hien(`${thanhGio()}${hud(S.K)}
-      <div class="quiz-question-card"><span class="quiz-q-tag">TÌNH HUỐNG 4 • KHỦNG HOẢNG</span>
-        <div class="cg-warn" style="margin:0 0 14px">🚨 Lạm phát, giá nguyên vật liệu (c) tăng gấp đôi, thị trường đóng băng!</div>
-        <div class="quiz-q-text">Nếu không hành động ngay, bạn sẽ mất 40% tổng vốn K₂. Bạn chọn chiến lược nào để lội ngược dòng?</div>
-        <div class="quiz-options" style="grid-template-columns:1fr">${ops.map((t, k) => `<button class="quiz-opt-btn" data-act="th4" data-k="${k}"><span class="opt-letter">${'ABC'[k]}</span><span>${t}</span></button>`).join('')}</div>
-        <div id="cgFb" class="quiz-feedback"></div></div>`);
+      <div>
+        <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--red-bright);margin-bottom:6px;">TÌNH HUỐNG 4 // KHỦNG HOẢNG KINH TẾ BÙNG PHÁT</div>
+        <div style="font-size:1.1rem;font-weight:700;line-height:1.5;margin-bottom:18px;color:var(--cream);">
+          🚨 Giá nguyên vật liệu tăng cao, sức mua suy giảm. Nếu không có chiến lược đúng, bạn sẽ bị giảm 40% vốn. Bạn chọn gì?
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          ${ops.map((t, k) => `<button class="quiz-opt-btn" data-act="th4" data-k="${k}"><span class="opt-letter">${'ABC'[k]}.</span><span>${t}</span></button>`).join('')}
+        </div>
+        <div id="cgFb" class="quiz-feedback"></div>
+      </div>`);
     batDauGio(THOI_GIAN_PHA2, () => chonTH4(-1));
   }
   function chonTH4(k) {
     if (khoa) return; khoa = true; dungGio();
     let he, lyDo;
-    if (k < 0) { he = 0.6; lyDo = 'Không kịp hành động nên mất 40% tổng vốn K₂.'; }
+    if (k < 0) { he = 0.6; lyDo = 'Không kịp ra quyết định, bạn bị tổn thất 40% vốn.'; }
     else [he, lyDo] = BANG4['ABC'[k]]['AB'[S.c3]];
     S.K = S.K2 * he;
-    S.nhatKy.push(`TH4: K = ${tien(S.K)}`);
-    document.querySelectorAll('.quiz-opt-btn').forEach((b, i) => { b.disabled = true; if (i === k) b.classList.add(he >= 1 ? 'correct' : 'wrong'); });
     he >= 1 ? amDung() : amSai();
+    document.querySelectorAll('.quiz-opt-btn').forEach((b, i) => { b.disabled = true; if (i === k) b.classList.add(he >= 1 ? 'correct' : 'wrong'); });
     const fb = $('cgFb'); fb.classList.add('show');
-    fb.innerHTML = `<strong>K mới = ${tien(S.K)}</strong><div class="${he >= 1 ? 'cg-good' : 'cg-warn'}">${esc(lyDo)}</div>
-      <button class="retro-btn primary" style="margin-top:12px" data-act="ketthuc">🏁 XEM BẢNG XẾP HẠNG ▶</button>`;
+    fb.innerHTML = `<strong>Tư bản chung cuộc: ${tien(S.K)}</strong><p style="margin:8px 0;color:var(--cream-soft);">${esc(lyDo)}</p>
+      <button class="retro-btn primary" style="margin-top:10px;" data-act="ketthuc">🏁 XEM BẢNG XẾP HẠNG ▶</button>`;
   }
 
-  /* ====== CẤU HÌNH CLOUD REALTIME ====== */
-  const FIREBASE_URL = 'https://kctcnhom5-default-rtdb.asia-southeast1.firebasedatabase.app/bxh.json';
+  /* === CLOUD FIREBASE REALTIME === */
+  function docBXHLocal() { try { return JSON.parse(localStorage.getItem(KHOA_BXH)) || []; } catch (e) { return []; } }
 
   async function docBXH() {
     try {
       const res = await fetch(FIREBASE_URL);
       const data = await res.json();
-      if (!data) return [];
+      if (!data) return docBXHLocal();
       return Object.keys(data).map(key => data[key]);
     } catch (e) {
-      console.error('Lỗi tải BXH:', e);
-      try { return JSON.parse(localStorage.getItem(KHOA_BXH)) || []; } catch(err) { return []; }
+      return docBXHLocal();
     }
   }
 
@@ -739,39 +1143,38 @@
         body: JSON.stringify(nguoiChoi)
       });
     } catch (e) {
-      console.error('Lỗi lưu điểm:', e);
+      try {
+        const ds = docBXHLocal();
+        ds.push(nguoiChoi);
+        localStorage.setItem(KHOA_BXH, JSON.stringify(ds));
+      } catch (err) {}
     }
   }
 
-  /* --- MÀN HÌNH HỒI KẾT: TỰ ĐỘNG ĐỒNG BỘ ONLINE --- */
+  /* MÀN KẾT THÚC (ĐÃ GỠ BỎ NÚT XEM KẾT LUẬN) */
   async function manKetThuc() {
-    tag('HỒI KẾT');
-    dungGio();
+    tag('HỒI KẾT'); dungGio();
     const id = Date.now();
-    const nhan = S.K >= 600 * TRIEU ? '🦈 CÁ MẬP — thâu tóm thị trường!' : S.K >= 300 * TRIEU ? '🐟 CÁ LỚN — đứng vững trên đỉnh' : S.K >= 150 * TRIEU ? '🐠 CÁ NHỎ — còn sống sót' : '🍤 BỊ CÁ LỚN NUỐT CHỬNG';
-
-    hien(`
-      <div class="cg-center">
-        <h2>Hồi kết: Cục diện thị trường</h2>
-        <p>Doanh nghiệp <strong>${esc(S.ten)}</strong> kết thúc cuộc đua với</p>
-        <div class="cg-big">${tien(S.K)}</div>
-        <p style="margin-bottom:12px">${nhan}</p>
-        <div id="bxhLoading" style="font-family:var(--font-mono); color:var(--cream-soft); margin: 20px 0;">
-          ⏳ Đang đồng bộ bảng xếp hạng toàn server...
-        </div>
-        <div id="bxhContainer"></div>
-        <div class="cta-row" style="justify-content:center; margin-top:20px;">
-          <button class="retro-btn primary" data-act="lai">🔄 CHƠI LẠI</button>
-          <button class="retro-btn secondary" onclick="switchView('summary')">📌 XEM KẾT LUẬN</button>
-        </div>
+    const nhan = S.K >= 600 * TRIEU ? '🦈 ĐẠI TƯ BẢN — THÂU TÓM TOÀN NGÀNH' : S.K >= 300 * TRIEU ? '🐟 TƯ BẢN CỠ VỪA — TRỤ VỮNG THÀNH CÔNG' : '🐠 DOANH NGHIỆP YẾU THẾ — NGUY CƠ PHÁ SẢN';
+    
+    hien(`<div class="cg-center">
+      <h2 style="font-size:1.8rem;text-transform:uppercase;margin-bottom:8px;">Hồi Kết Cuộc Đua</h2>
+      <p style="color:var(--cream-muted);">Doanh nghiệp <strong>${esc(S.ten)}</strong> hoàn tất cuộc hành trình với:</p>
+      <div class="cg-big">${tien(S.K)}</div>
+      <p style="font-weight:700;color:var(--cream-soft);margin-bottom:16px;">${nhan}</p>
+      <div id="bxhLoading" style="font-family:var(--font-mono);color:var(--cream-soft);margin:20px 0;">
+        ⏳ Đang đồng bộ bảng xếp hạng toàn server...
       </div>
-    `);
+      <div id="bxhContainer" style="width:100%;"></div>
+      <div class="cta-row" style="justify-content:center; margin-top:20px;">
+        <button class="retro-btn primary" data-act="lai">🔄 CHƠI LẠI VÁN MỚI</button>
+      </div>
+    </div>`);
 
     beep(784, .2);
     setTimeout(() => beep(988, .3), 220);
 
-    await ghiBXH({ id: id, ten: S.ten, K: S.K, time: new Date().toISOString() });
-
+    await ghiBXH({ id, ten: S.ten, K: S.K, time: new Date().toISOString() });
     const ds = await docBXH();
     ds.sort((a, b) => b.K - a.K);
     const top = ds.slice(0, 10);
@@ -783,7 +1186,7 @@
     const container = $('bxhContainer');
     if (container) {
       container.innerHTML = `
-        <p style="margin-bottom:12px; font-weight:bold; color:var(--red-bright)">
+        <p style="margin-bottom:12px;font-family:var(--font-mono);color:var(--red-bright);font-weight:bold;">
           Vị trí của bạn: Hạng #${hang > 0 ? hang : 'N/A'} trên toàn hệ thống
         </p>
         <table class="cg-table">
@@ -820,7 +1223,6 @@
       else if (a === 'th4') chonTH4(k);
       else if (a === 'ketthuc') manKetThuc();
       else if (a === 'lai') manThietLap();
-      else if (a === 'xoabxh') { ghiBXH([]); manKetThuc(); }
     });
     r.addEventListener('keydown', e => {
       if (e.key !== 'Enter') return;
