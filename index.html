@@ -785,45 +785,6 @@
     }
   }
 
-  /* HÀM XÓA TOÀN BỘ BẢNG XẾP HẠNG (CÓ MẬT MÃ ADMIN) */
-  async function xoaToanBoBXH() {
-    // 1. Đặt mật mã của ban tổ chức ở đây (ví dụ: nhom5 hoặc 123456)
-    const ADMIN_PIN = "nhom5"; 
-
-    const pinNhap = prompt("🔒 XÁC THỰC QUẢN TRỊ VIÊN:\nVui lòng nhập mã PIN ban tổ chức để xóa BXH:");
-    
-    // Nếu bấm Hủy hoặc không nhập gì
-    if (pinNhap === null || pinNhap.trim() === "") return;
-
-    // Kiểm tra mã PIN
-    if (pinNhap.trim() !== ADMIN_PIN) {
-      alert("❌ SAI MẬT MÃ! Bạn không có quyền xóa Bảng Xếp Hạng.");
-      return;
-    }
-
-    const xacNhan = confirm("⚠ CẢNH BÁO: Bạn có chắc chắn muốn xóa sạch dữ liệu BXH trên toàn server không?");
-    if (!xacNhan) return;
-
-    try {
-      await fetch(FIREBASE_URL, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
-      });
-      alert("✅ Đã xóa sạch Bảng Xếp Hạng thành công!");
-    } catch (e) {
-      console.error('Lỗi khi xóa Firebase:', e);
-      alert("⚠ Có lỗi xảy ra khi kết nối server!");
-    }
-
-    try {
-      localStorage.removeItem(KHOA_BXH);
-    } catch (e) {}
-
-    bxhDs = [];
-    bxhId = 0;
-    veBXH();
-  }
   
   /* BẢNG XẾP HẠNG DUY NHẤT */
   let bxhDs = [], bxhId = 0;
