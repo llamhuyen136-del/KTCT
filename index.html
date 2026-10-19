@@ -43,9 +43,6 @@
       z-index: 9999; background-size: 100% 3px, 6px 100%; pointer-events: none;
     }
 
-    /* ========================================================
-       HIỆU ỨNG NẢY NHẸ CHO TOÀN BỘ MỌI NÚT VÀ LIÊN KẾT TRÊN WEB
-       ======================================================== */
     button, 
     a.retro-btn, 
     .os-nav-btn, 
@@ -172,7 +169,7 @@
     .cg-table th:nth-child(3), .cg-table td:nth-child(3) { width: 34%; word-break: break-word; text-align: right; }
     .cg-table th:nth-child(4), .cg-table td:nth-child(4) { width: 20%; text-align: right; }
 
-    /* FLIPBOOK: CROP ẨN THANH CÔNG CỤ TRẮNG */
+    /* FLIPBOOK CROP KHUNG CHỨA */
     .flipbook-container { 
       position: relative; 
       width: 100%; 
@@ -507,7 +504,7 @@
     tickClock(); setInterval(tickClock, 1000);
   </script>
 
-  <!-- MÃ NGUỒN ARCADE GAME (TÍCH HỢP NÚT XÓA BXH + FIREBASE) -->
+  <!-- MÃ NGUỒN ARCADE GAME -->
   <script>
 (function () {
   const TEN_GAME = 'CAPITAL RUSH';
@@ -785,7 +782,6 @@
     }
   }
 
-  
   /* BẢNG XẾP HẠNG DUY NHẤT */
   let bxhDs = [], bxhId = 0;
 
@@ -814,7 +810,7 @@
       </table>`;
   }
 
-  /* MÀN HÌNH HỒI KẾT */
+  /* MÀN HÌNH HỒI KẾT (CHỈ CÓ NÚT CHƠI LẠI) */
   async function manKetThuc() {
     tag('HỒI KẾT');
     dungGio();
@@ -832,9 +828,8 @@
           ⏳ Đang đồng bộ bảng xếp hạng toàn server...
         </div>
         <div id="bxhContainer"></div>
-        <div class="cta-row" style="justify-content:center; gap: 12px; margin-top:20px;">
+        <div class="cta-row" style="justify-content:center; margin-top:20px;">
           <button class="retro-btn primary" data-act="lai">🔄 CHƠI LẠI</button>
-          <button class="retro-btn ghost" data-act="xoabxh" style="color:var(--red-bright); border-color:var(--red-primary);">🗑 XÓA BXH</button>
         </div>
       </div>
     `);
@@ -873,7 +868,6 @@
       else if (a === 'th4') chonTH4(k);
       else if (a === 'ketthuc') manKetThuc();
       else if (a === 'lai') manThietLap();
-      else if (a === 'xoabxh') xoaToanBoBXH();
     });
     r.addEventListener('keydown', e => {
       if (e.key !== 'Enter') return;
